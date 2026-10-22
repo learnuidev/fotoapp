@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Camera, Check, Film, Loader2, Sparkles } from 'lucide-react';
+import { Camera, Check, Film, Images, Loader2, Sparkles } from 'lucide-react';
 import type { Challenge, PublicEventSettings, Roll } from '@foto/types';
 import { Badge, Button, cn, relativeTime } from '@foto/ui';
 import { useDevelopRoll, useStartRoll, useUploadPhoto } from '@foto/api';
@@ -17,9 +17,13 @@ import { toast } from 'sonner';
  * say so, because a film camera that looks like it did nothing is the one thing
  * this product must not ship.
  *
- * `capture="environment"` is what makes a phone offer its camera rather than its
- * files. On a desktop it is ignored and the file picker opens, which is how a host
- * tests the whole thing.
+ * There are two ways in, because there is no one input that offers both. A file input
+ * carrying `capture="environment"` goes straight to the phone's camera app and never
+ * shows the photo library; the same input without it goes to the library and never
+ * shows the camera. So the shutter opens the first and a "from your photos" button
+ * opens the second: the guest decides, rather than the markup deciding for them. On a
+ * desktop `capture` is ignored, both buttons open the file picker, and that is how a
+ * host tests the whole thing.
  */
 export function CameraPanel({
   eventId,
@@ -39,6 +43,7 @@ export function CameraPanel({
   onShot?: () => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const libraryRef = useRef<HTMLInputElement>(null);
   const [promptId, setPromptId] = useState<string | null>(
     challenges.find((challenge) => challenge.active)?.challengeId ?? null,
   );
@@ -96,7 +101,9 @@ export function CameraPanel({
     }
 
     setSending(0);
+    // Cleared on both, so picking the same file twice in a row still fires a change.
     if (inputRef.current) inputRef.current.value = '';
+    if (libraryRef.current) libraryRef.current.value = '';
     if (uploaded > 0) onShot?.();
   }
 
@@ -144,11 +151,22 @@ export function CameraPanel({
 
       {/* --- the shutter ---------------------------------------------------- */}
       <div className="flex flex-col items-center gap-3 py-2">
+        {/* The camera app: `capture` is what sends a phone here instead of to files. */}
         <input
           ref={inputRef}
           type="file"
           accept="image/*"
           capture="environment"
+          multiple
+          className="sr-only"
+          onChange={(event) => void handleFiles(event.target.files)}
+        />
+
+        {/* The photo library: same input, no `capture`. */}
+        <input
+          ref={libraryRef}
+          type="file"
+          accept="image/*"
           multiple
           className="sr-only"
           onChange={(event) => void handleFiles(event.target.files)}
@@ -175,6 +193,26 @@ export function CameraPanel({
             </span>
           )}
         </button>
+
+        <span className="-mt-1 text-xs uppercase tracking-wider text-muted-foreground">
+          Take a photo
+        </span>
+
+        {/*
+          The other half of the choice. A guest who was there before the event started
+          has the photo already; making them open the camera and shoot the screen would
+          be a worse photo and a worse night.
+        */}
+        <Button
+          variant="outline"
+          size="sm"
+          className="rounded-full"
+          disabled={busy || outOfFilm}
+          onClick={() => libraryRef.current?.click()}
+        >
+          <Images />
+          Choose from photos
+        </Button>
 
         <p className="text-center text-sm text-muted-foreground">
           {outOfFilm
