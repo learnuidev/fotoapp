@@ -17,7 +17,7 @@ import type {
   RollReveal,
 } from './event';
 import type { Guest, GuestSession } from './guest';
-import type { Photo, PhotoComment, PhotoStatus, ReactionEmoji } from './photo';
+import type { Photo, PhotoComment, PhotoMetadata, PhotoStatus, ReactionEmoji } from './photo';
 import type { Roll, RollWithPhotos } from './roll';
 
 /** A presigned upload: where to PUT the bytes, and with which headers. */
@@ -115,6 +115,8 @@ export interface CreatePhotoPayload {
   caption?: string;
   challengeId?: string | null;
   takenAt?: number;
+  /** EXIF, as the browser read it out of the file. Sanitised by the API. */
+  metadata?: PhotoMetadata | null;
 }
 
 export interface CreatePhotoResponse {

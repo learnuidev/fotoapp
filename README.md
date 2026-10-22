@@ -218,6 +218,25 @@ Reading goes through CloudFront in front of a private bucket, and every photo th
 returns carries its own `url` — a client never learns a storage key it could build a
 URL from.
 
+Every upload also carries what the camera wrote into the file. The browser parses it
+out of the bytes it is already holding (`exifr`, in `packages/api/src/lib/upload.ts`)
+and sends it with the photo, so no Lambda ever fetches an object back out of S3 to read
+it: body, lens, shutter, aperture, ISO, focal length (and the 35mm equivalent), exposure
+bias, flash, white balance, metering, exposure program, colour space, the software that
+last touched it, `DateTimeOriginal`, and the GPS when the file has it. It is sanitised
+on the way in (`services/api/src/lib/photo-metadata.ts`) — clamped, truncated, and with
+megapixels worked out from the pixels rather than taken from the sender — and shown in
+the photo viewer's **Capture details** panel.
+
+Two things about it are deliberate:
+
+- **location is never asked for**, only read: if the camera wrote coordinates into the
+  file the album has them, and if it did not there is no second field asking anybody to
+  supply them. The event's own `location` is the venue's *name*, which is a different
+  kind of fact;
+- **a file with no EXIF is a normal photo**, not an error — it simply shows the file's
+  own facts (format, dimensions, megapixels, size) and no more.
+
 There are two doors to step 1, and they are the same handler:
 
 - `POST /events/{id}/uploads` is **public at the gateway**, because a guest has no

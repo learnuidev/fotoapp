@@ -27,6 +27,7 @@ import {
   formatClock,
   formatMoment,
 } from '@foto/ui';
+import { PhotoDetails } from './photo-details';
 import {
   useComments,
   useCreateComment,
@@ -250,6 +251,8 @@ function ViewerBody({
             {photo.challengeEmoji} shot for “{photo.challengeTitle}”
           </p>
         )}
+
+        <PhotoDetails photo={photo} />
 
         {isHost && photo.status === 'pending' && (
           <div className="flex items-center justify-between gap-3 rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3">

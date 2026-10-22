@@ -223,6 +223,7 @@ export function toPhoto(row: PhotoRow, ctx: PhotoContext): Photo {
     reactions: ctx.reactions.get(row.photoId) ?? EMPTY_REACTIONS,
     commentCount: ctx.commentCounts.get(row.photoId) ?? 0,
     favorite: row.favorite,
+    metadata: row.metadata ?? null,
   };
 }
 

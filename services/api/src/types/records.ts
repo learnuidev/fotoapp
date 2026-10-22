@@ -7,6 +7,8 @@
  * and none of it leaks out.
  */
 
+import type { PhotoMetadata } from '@foto/types';
+
 /** Everything a viewer needs to know about a name after it has been written. */
 export interface NameFields {
   guestId: string;
@@ -63,6 +65,14 @@ export interface PhotoRow extends NameFields {
   takenAt: number;
   createdAt: number;
   status: 'visible' | 'pending' | 'hidden' | 'developing';
+  /**
+   * What the camera recorded, sanitised on the way in (`lib/photo-metadata.ts`).
+   *
+   * Absent rather than null on a file that carried none, for the same reason `rollId`
+   * is: the store's `removeUndefinedValues` keeps a missing key out of the item
+   * entirely, and an item with no metadata is a normal item.
+   */
+  metadata?: PhotoMetadata;
   challengeId: string | null;
   /**
    * The roll this frame is on, **absent** rather than null when it is on none.

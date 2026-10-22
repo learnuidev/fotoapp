@@ -39,6 +39,7 @@ import {
   toRoll,
   type Viewer,
 } from '../lib/serialize';
+import { sanitizeMetadata } from '../lib/photo-metadata';
 import { assertUploadable, reserveUpload } from '../lib/storage';
 import {
   addFrameToRoll,
@@ -153,6 +154,7 @@ async function createPhoto(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
     caption?: string;
     challengeId?: string | null;
     takenAt?: number;
+    metadata?: unknown;
   }>(event);
 
   const key = (body.key ?? '').trim();
@@ -201,6 +203,12 @@ async function createPhoto(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
     assertRollHasRoom(rollRow);
   }
 
+  const width = Math.max(0, Math.round(Number(body.width ?? 0)));
+  const height = Math.max(0, Math.round(Number(body.height ?? 0)));
+
+  // Read now, so a payload that is not even an object fails before a row is written.
+  const metadata = sanitizeMetadata(body.metadata, { width, height });
+
   const photoRow: PhotoRow = {
     photoId: ulid(),
     eventId: row.eventId,
@@ -208,8 +216,8 @@ async function createPhoto(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
     guestName: guestRow.name,
     guestEmoji: guestRow.emoji,
     key,
-    width: Math.max(0, Math.round(Number(body.width ?? 0))),
-    height: Math.max(0, Math.round(Number(body.height ?? 0))),
+    width,
+    height,
     size: Math.max(0, Math.round(Number(body.size ?? 0))),
     contentType,
     caption: (body.caption ?? '').trim().slice(0, 280),
@@ -223,6 +231,7 @@ async function createPhoto(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
     challengeId,
     // Omitted, not null: `rollId` is an index key, and DynamoDB will not index a NULL.
     ...(rollRow ? { rollId: rollRow.rollId } : {}),
+    ...(metadata ? { metadata } : {}),
     favorite: false,
   };
 

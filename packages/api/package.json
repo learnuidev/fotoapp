@@ -2,11 +2,12 @@
   "name": "@foto/api",
   "version": "1.0.0",
   "private": true,
-  "description": "The Foto API client and the React Query hooks built on it — one place where a request, its cache key and its invalidation live.",
+  "description": "The Foto API client and the React Query hooks built on it \u2014 one place where a request, its cache key and its invalidation live.",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "dependencies": {
-    "@foto/types": "*"
+    "@foto/types": "*",
+    "exifr": "^7.1.3"
   },
   "peerDependencies": {
     "@tanstack/react-query": "^5.101.4",
