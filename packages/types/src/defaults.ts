@@ -23,7 +23,6 @@ export const DEFAULT_EVENT_SETTINGS: EventSettings = {
   allowDownloads: true,
   challengesEnabled: true,
   slideshowEnabled: true,
-  filmLook: true,
 };
 
 /** The shots-per-roll choices the settings form offers. */

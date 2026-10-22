@@ -34,8 +34,15 @@ everybody else's photos, and can take the album home as a zip if the host allows
 **The host** can add photos of their own from the console's gallery — the one shot
 the photographer sent over, the room before anybody arrived — and they land in the
 album straight away, credited to them, with no roll to develop and no approval to give
-themselves. They can also star a photo, hide it, delete it, or make it the album cover
-from the same viewer.
+themselves. From the same viewer they can star a photo, hide it, delete it, make it the
+album cover, and **file it under a prompt**: the camera tags a shot when it is taken,
+and this is the same field, editable afterwards, because the host is the person who
+knows a week later that three of the frames were really "the shoes".
+
+**Prompts are editable too** — added, renamed (title and emoji, in place), paused so the
+guest camera stops offering them, or deleted with their photos left alone. Renaming one
+rewords every photo filed under it, because a photo's prompt is a reference rather than
+a copy.
 
 **The wall** is `/e/<code>/wall`: a projector screen with no sign-in, polling every
 five seconds, cycling through the evening with the guest's name and the caption under
@@ -237,13 +244,23 @@ Two things about it are deliberate:
 - **a file with no EXIF is a normal photo**, not an error — it simply shows the file's
   own facts (format, dimensions, megapixels, size) and no more.
 
-There are two doors to step 1, and they are the same handler:
+The console reaches the same handlers through a second set of doors, and the reason is
+one sentence: **the guest routes are public at the gateway** — a guest has no Cognito
+token to present, and this service verifies guest tokens itself — so on those routes it
+cannot see a host's claims either. Anything the host does that a guest can also do
+therefore has a `host/` copy behind the authorizer:
 
-- `POST /events/{id}/uploads` is **public at the gateway**, because a guest has no
-  Cognito token to present and this service verifies guest tokens itself;
-- `POST /events/{id}/host/uploads` is **behind the Cognito authorizer**, because a
-  public route cannot see a host's claims — which is how the console adds a photo
-  without the host having to join their own event as a guest.
+| guest route (public) | console route (authorized) |
+| --- | --- |
+| `GET /events/{id}/photos` | `GET /events/{id}/host/photos` |
+| `POST /events/{id}/uploads` · `POST /events/{id}/photos` | `POST /events/{id}/host/uploads` · `POST /events/{id}/host/photos` |
+| `DELETE /photos/{id}` | `DELETE /host/photos/{id}` |
+| `DELETE /photos/{id}/comments/{c}` | `DELETE /host/photos/{id}/comments/{c}` |
+| `GET /events/{id}/downloads` | `GET /events/{id}/host/downloads` |
+
+Without them the console read the gallery as though nobody were signed in: it saw the
+visible photos and none of the waiting or hidden ones — which are exactly what a
+moderator opens it for.
 
 A host's own uploads are filed under a guest row made for them (role `host`, avatar
 🎩), so the roster, the leaderboard and every photo credit name them like anybody

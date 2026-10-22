@@ -38,6 +38,7 @@ import type { EventCounts } from '@foto/types';
 const NO_COUNTS: EventCounts = {
   photos: 0,
   pending: 0,
+  hidden: 0,
   guests: 0,
   reactions: 0,
   comments: 0,

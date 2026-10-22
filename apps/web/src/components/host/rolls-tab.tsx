@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Film, Loader2, Sparkles } from 'lucide-react';
 import type { Event } from '@foto/types';
 import { Badge, Button, Card, CardContent, EmojiAvatar, Skeleton, cn } from '@foto/ui';
-import { useDevelopAllRolls, useEventRolls } from '@foto/api';
+import { useDevelopAllRolls, useEventChallenges, useEventRolls } from '@foto/api';
 import { toast } from 'sonner';
 import { Gallery } from '@/components/gallery';
 
@@ -18,6 +18,7 @@ import { Gallery } from '@/components/gallery';
  */
 export function RollsTab({ event }: { event: Event }) {
   const rolls = useEventRolls(event.eventId);
+  const challenges = useEventChallenges(event.eventId);
   const developAll = useDevelopAllRolls(event.eventId);
   const [revealed, setRevealed] = useState(false);
 
@@ -132,7 +133,7 @@ export function RollsTab({ event }: { event: Event }) {
                 scope="host"
                 allowComments={event.settings.allowComments}
                 allowReactions={event.settings.allowReactions}
-                filmLook={event.settings.filmLook}
+                challenges={challenges.data}
                 emptyTitle="An empty roll"
                 emptyBody="Developed with nothing on it."
               />

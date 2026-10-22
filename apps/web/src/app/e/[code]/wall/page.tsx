@@ -100,7 +100,6 @@ export default function WallPage({ params }: { params: { code: string } }) {
               aria-hidden={candidateIndex !== index}
               className={cn(
                 'absolute inset-0 size-full object-contain transition-opacity duration-[1400ms] ease-out',
-                event.settings.filmLook && 'film',
                 candidateIndex === index ? 'opacity-100' : 'opacity-0',
               )}
             />

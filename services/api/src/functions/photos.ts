@@ -299,9 +299,10 @@ async function listPhotos(event: APIGatewayProxyEvent): Promise<APIGatewayProxyR
     photos: page.map((photo) => toPhoto(photo, ctx)),
     nextBefore: page.length === limit ? page[page.length - 1]!.createdAt : null,
     counts: await countsFor(row.eventId),
-    // The host console's moderation queue needs to know how much is waiting without
-    // a second request; guests are simply told zero.
+    // The host console's moderation chips need to know how much is waiting and how
+    // much is hidden without a second request; guests are simply told zero.
     pending: isHost ? all.filter((photo) => photo.status === 'pending').length : 0,
+    hidden: isHost ? all.filter((photo) => photo.status === 'hidden').length : 0,
   });
 }
 
@@ -331,11 +332,18 @@ async function getPhoto(event: APIGatewayProxyEvent): Promise<APIGatewayProxyRes
 }
 
 /**
- * Moderation: the host's switch over one photo, and their star on it.
+ * Moderation: the host's switches over one photo.
  *
  * A host may publish a waiting photo, hide one from the gallery, bring it back,
- * rename what it says, and mark it a favourite — which is what the wall plays
- * first and what downloading keeps. None of these deletes anything.
+ * rename what it says, mark it a favourite — which is what the wall plays first and
+ * what downloading keeps — and **file it under a prompt**, including after the fact.
+ *
+ * That last one matters more than it sounds: a prompt is how a room is asked for
+ * something, and the host is the one person who knows afterwards which of the
+ * evening's photos answered it. The guest camera tags at the moment of shooting; this
+ * is the same field, editable later, by the person keeping the album.
+ *
+ * None of these deletes anything.
  */
 async function updatePhoto(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   const photoId = pathParam(event, 'photoId');
@@ -347,7 +355,12 @@ async function updatePhoto(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
   const host = requireHost(event);
   if (eventRow.hostId !== host.userId) throw new HttpError(404, 'No such photo');
 
-  const body = jsonBody<{ status?: string; caption?: string; favorite?: boolean }>(event);
+  const body = jsonBody<{
+    status?: string;
+    caption?: string;
+    favorite?: boolean;
+    challengeId?: string | null;
+  }>(event);
   const changes: Partial<PhotoRow> = {};
 
   if (body.status !== undefined) {
@@ -361,6 +374,19 @@ async function updatePhoto(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
   }
   if (body.caption !== undefined) changes.caption = body.caption.trim().slice(0, 280);
   if (body.favorite !== undefined) changes.favorite = Boolean(body.favorite);
+
+  if (body.challengeId !== undefined) {
+    if (body.challengeId === null || body.challengeId === '') {
+      changes.challengeId = null;
+    } else {
+      // A prompt from another event would be a photo filed where nobody can find it.
+      const challenge = await store.get(challenges, body.challengeId);
+      if (!challenge || challenge.eventId !== row.eventId) {
+        throw new HttpError(400, 'That prompt is not from this event');
+      }
+      changes.challengeId = challenge.challengeId;
+    }
+  }
 
   const updated = await store.patch(photos, photoId, changes);
   const ctx = await photoContext(row.eventId, { hostId: host.userId });

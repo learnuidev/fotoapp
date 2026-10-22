@@ -50,8 +50,24 @@ export interface Viewer {
   guestId?: string;
 }
 
+/**
+ * An event's settings, from what is stored and what this version knows.
+ *
+ * Only the fields this version has are read out, rather than spreading the stored
+ * object wholesale: a settings blob written by an older deploy keeps its retired keys,
+ * and an API that echoed them back would be advertising a switch nothing reads — which
+ * is how `filmLook` outlived the filter it turned on.
+ */
 export function settingsOf(row: EventRow): EventSettings {
-  return { ...DEFAULT_EVENT_SETTINGS, ...(row.settings as Partial<EventSettings>) };
+  const stored = row.settings as Partial<EventSettings>;
+  const settings = { ...DEFAULT_EVENT_SETTINGS };
+  for (const key of Object.keys(DEFAULT_EVENT_SETTINGS) as (keyof EventSettings)[]) {
+    const value = stored[key];
+    if (value !== undefined && typeof value === typeof DEFAULT_EVENT_SETTINGS[key]) {
+      (settings[key] as unknown) = value;
+    }
+  }
+  return settings;
 }
 
 /** The settings a guest is told, which is the subset a guest screen acts on. */
@@ -66,7 +82,6 @@ function publicSettings(settings: EventSettings): PublicEventSettings {
     allowDownloads: settings.allowDownloads,
     challengesEnabled: settings.challengesEnabled,
     slideshowEnabled: settings.slideshowEnabled,
-    filmLook: settings.filmLook,
     photoApproval: settings.photoApproval,
   };
 }

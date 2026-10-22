@@ -265,12 +265,6 @@ export function SettingsTab({ event }: { event: Event }) {
             checked={settings.slideshowEnabled}
             onChange={(checked) => set('slideshowEnabled', checked)}
           />
-          <Toggle
-            label="Film look"
-            hint="Warm, grainy and slightly overexposed — the whole album, as if it were shot on film."
-            checked={settings.filmLook}
-            onChange={(checked) => set('filmLook', checked)}
-          />
         </CardContent>
       </Card>
 

@@ -16,13 +16,11 @@ export function PhotoTile({
   photo,
   onOpen,
   showStatus = false,
-  filmLook = false,
   isOwn = false,
 }: {
   photo: Photo;
   onOpen: () => void;
   showStatus?: boolean;
-  filmLook?: boolean;
   isOwn?: boolean;
 }) {
   const ratio = photo.width && photo.height ? photo.width / photo.height : 4 / 5;
@@ -41,7 +39,6 @@ export function PhotoTile({
         loading="lazy"
         className={cn(
           'size-full object-cover transition-transform duration-500 group-hover:scale-[1.03]',
-          filmLook && 'film',
         )}
       />
 
@@ -51,7 +48,11 @@ export function PhotoTile({
       {showStatus && photo.status !== 'visible' && (
         <div className="absolute left-2 top-2">
           <Badge variant={photo.status === 'pending' ? 'waiting' : 'outline'}>
-            {photo.status === 'pending' ? 'waiting' : photo.status === 'hidden' ? 'hidden' : 'film'}
+            {photo.status === 'pending'
+              ? 'waiting'
+              : photo.status === 'hidden'
+                ? 'hidden'
+                : 'on a roll'}
           </Badge>
         </div>
       )}

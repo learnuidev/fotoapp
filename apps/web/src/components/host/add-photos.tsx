@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { ImagePlus, Loader2 } from 'lucide-react';
+import type { Challenge } from '@foto/types';
 import { Button, cn } from '@foto/ui';
 import { useHostUploadPhoto } from '@foto/api';
 import { toast } from 'sonner';
@@ -18,11 +19,19 @@ import { toast } from 'sonner';
  * It uploads on selection rather than behind a form. The files are already chosen at
  * that point, and a second "confirm" press is a second chance to lose them.
  */
-export function AddPhotos({ eventId }: { eventId: string }) {
+export function AddPhotos({ eventId, challenges = [] }: { eventId: string; challenges?: Challenge[] }) {
   const input = useRef<HTMLInputElement>(null);
   const upload = useHostUploadPhoto(eventId);
   const [queue, setQueue] = useState<{ name: string; percent: number }[]>([]);
   const [sending, setSending] = useState(false);
+  /**
+   * The prompt the next upload is filed under.
+   *
+   * Optional, and set before picking the files rather than after: a host adding the
+   * photographer's frames usually knows what they are of. Anything forgotten here can
+   * still be filed from the photo's own viewer, which is the point of the picker there.
+   */
+  const [promptId, setPromptId] = useState<string | null>(null);
 
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
@@ -41,6 +50,7 @@ export function AddPhotos({ eventId }: { eventId: string }) {
         }
         await upload.mutateAsync({
           file,
+          challengeId: promptId,
           onProgress: (percent) =>
             setQueue((current) =>
               current.map((entry, entryIndex) =>
@@ -65,7 +75,33 @@ export function AddPhotos({ eventId }: { eventId: string }) {
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex items-center gap-2">
+      {challenges.length > 0 && (
+        <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <span className="hidden sm:inline">file under</span>
+          {/*
+            A select rather than a strip of chips: this sits in a toolbar next to the
+            filters, and six chips of prompt titles is a row that wraps and pushes the
+            gallery down. It is a choice made once before picking the files.
+          */}
+          <select
+            value={promptId ?? ''}
+            onChange={(changeEvent) => setPromptId(changeEvent.target.value || null)}
+            disabled={sending}
+            aria-label="File the photos I add under a prompt"
+            className="h-8 max-w-44 rounded-full border border-border/70 bg-card px-3 text-xs text-foreground disabled:opacity-60"
+          >
+            <option value="">no prompt</option>
+            {challenges
+              .filter((challenge) => challenge.active)
+              .map((challenge) => (
+                <option key={challenge.challengeId} value={challenge.challengeId}>
+                  {challenge.emoji} {challenge.title}
+                </option>
+              ))}
+          </select>
+        </label>
+      )}
       <input
         ref={input}
         type="file"

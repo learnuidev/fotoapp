@@ -135,6 +135,8 @@ export interface ListPhotosResponse {
   counts: EventCounts;
   /** How many photos are waiting for the host. Always zero for a guest. */
   pending: number;
+  /** How many photos the host has taken out of the gallery. Always zero for a guest. */
+  hidden: number;
 }
 
 export interface PhotoResponse {
@@ -145,6 +147,8 @@ export interface UpdatePhotoPayload {
   status?: PhotoStatus;
   caption?: string;
   favorite?: boolean;
+  /** File it under a prompt, or `null` to take it out of one. */
+  challengeId?: string | null;
 }
 
 /**

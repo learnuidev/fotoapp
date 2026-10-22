@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Images } from 'lucide-react';
-import type { Photo } from '@foto/types';
+import type { Challenge, Photo } from '@foto/types';
 import { cn } from '@foto/ui';
 import { PhotoTile } from './photo-tile';
 import { PhotoViewer } from './photo-viewer';
@@ -25,7 +25,7 @@ export function Gallery({
   viewerGuestId,
   allowComments,
   allowReactions,
-  filmLook,
+  challenges,
   showStatus = false,
   onChanged,
   emptyTitle = 'No photos yet',
@@ -39,7 +39,8 @@ export function Gallery({
   viewerGuestId?: string;
   allowComments: boolean;
   allowReactions: boolean;
-  filmLook: boolean;
+  /** The event's prompts, for a host filing photos after the fact. */
+  challenges?: Challenge[];
   showStatus?: boolean;
   onChanged?: () => void;
   emptyTitle?: string;
@@ -85,7 +86,6 @@ export function Gallery({
             photo={photo}
             onOpen={() => setOpenId(photo.photoId)}
             showStatus={showStatus}
-            filmLook={filmLook}
             isOwn={Boolean(viewerGuestId && photo.guestId === viewerGuestId)}
           />
         ))}
@@ -98,6 +98,7 @@ export function Gallery({
         viewerGuestId={viewerGuestId}
         allowComments={allowComments}
         allowReactions={allowReactions}
+        challenges={challenges}
         onClose={() => setOpenId(null)}
         onChanged={onChanged}
       />

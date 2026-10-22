@@ -148,27 +148,14 @@
 
 @layer components {
   /**
-   * The film look.
+   * A photo is shown as it was uploaded.
    *
-   * Applied to a photo when its event has `filmLook` on, and to a roll's frames
-   * always. Warm shadows, a touch of contrast, and a grain drawn as an SVG noise
-   * wash at very low opacity — the difference between "a camera roll" and "an album
-   * somebody made". It is CSS, so it costs no processing and can be switched off in
-   * settings.
+   * There used to be a `.film` filter here — sepia, contrast, a nudge of brightness,
+   * and a grain overlay — applied to every photo of an event that had the look switched
+   * on. It was wrong in a way that took somebody else's eye to see: a photograph is the
+   * one thing on this page that is not ours to style, and "warm" to us is "over-exposed"
+   * to the person who took it. The album draws the frame; the picture is the picture.
    */
-  .film {
-    filter: saturate(1.06) contrast(1.05) sepia(0.12) brightness(1.02);
-  }
-
-  .grain::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.11;
-    mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
-  }
 
   /** A printed table card: what a guest scans, and what the host prints. */
   .table-card {

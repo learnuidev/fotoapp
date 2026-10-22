@@ -228,13 +228,13 @@ export const ROUTES: Route[] = [
     handler: photoHandlers.list,
   },
   /**
-   * The console's own upload, behind the authorizer.
+   * The console's versions of the routes that serve two audiences.
    *
-   * `/uploads` and `/photos` are public at the gateway because a guest has no Cognito
-   * token to present, and this service never verifies one itself. That leaves those two
-   * routes unable to see a host's claims — so a host adding a photo from the console
-   * posts to the same handlers through these two routes, which *are* behind the
-   * authorizer. Two paths, one implementation: `photoHandlers.reserve` and `.create`.
+   * `/uploads`, `/photos`, the deletions and the download list are public at the
+   * gateway, because a guest has no Cognito token to present and this service never
+   * verifies one itself. That leaves those routes unable to see a host's claims — so a
+   * host acting from the console reaches the same handlers through these `host/` paths,
+   * which *are* behind the authorizer. Two doors, one implementation.
    */
   {
     domain: 'photos',
@@ -253,6 +253,51 @@ export const ROUTES: Route[] = [
     authorized: true,
     summary: 'Records a photo the host added, straight into the album.',
     handler: photoHandlers.create,
+  },
+  /**
+   * The console's gallery read.
+   *
+   * The public `/photos` read is what a guest and the wall use, and on it this service
+   * can see a guest token but not a host's — so without this route the console asked
+   * "what is in the gallery" as though nobody were signed in, and was told about the
+   * visible photos only. Waiting photos, hidden photos and the host's own beside them
+   * are exactly what the console exists to show.
+   */
+  {
+    domain: 'photos',
+    method: 'GET',
+    path: 'events/{eventId}/host/photos',
+    audience: 'host',
+    authorized: true,
+    summary: 'The gallery as the host sees it: every status, every filter.',
+    handler: photoHandlers.list,
+  },
+  {
+    domain: 'photos',
+    method: 'DELETE',
+    path: 'host/photos/{photoId}',
+    audience: 'host',
+    authorized: true,
+    summary: 'Deletes a photo from the console — the host’s half of a route a guest uses for their own.',
+    handler: photoHandlers.remove,
+  },
+  {
+    domain: 'photos',
+    method: 'DELETE',
+    path: 'host/photos/{photoId}/comments/{commentId}',
+    audience: 'host',
+    authorized: true,
+    summary: 'Deletes a comment from the console.',
+    handler: photoHandlers.deleteComment,
+  },
+  {
+    domain: 'photos',
+    method: 'GET',
+    path: 'events/{eventId}/host/downloads',
+    audience: 'host',
+    authorized: true,
+    summary: 'The download list, even for an album the host has closed to guest downloads.',
+    handler: photoHandlers.downloadList,
   },
   {
     domain: 'photos',

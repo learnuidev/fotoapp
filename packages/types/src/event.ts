@@ -59,8 +59,6 @@ export interface EventSettings {
   allowDownloads: boolean;
   challengesEnabled: boolean;
   slideshowEnabled: boolean;
-  /** Draw the gallery warm and grainy, as film would be. */
-  filmLook: boolean;
 }
 
 /** The event as its host sees it: every setting, plus the counts a console shows. */
@@ -89,12 +87,16 @@ export interface Event {
 
 /** The numbers drawn on the console cards and in the guest header. */
 export interface EventCounts {
+  /** Photos in the gallery — the number a guest is told. */
   photos: number;
   guests: number;
   reactions: number;
   comments: number;
   rolls: number;
+  /** Waiting for the host's yes. */
   pending: number;
+  /** Taken out of the gallery, still in the album. */
+  hidden: number;
 }
 
 /**
@@ -131,7 +133,6 @@ export interface PublicEventSettings {
   allowDownloads: boolean;
   challengesEnabled: boolean;
   slideshowEnabled: boolean;
-  filmLook: boolean;
   photoApproval: boolean;
 }
 

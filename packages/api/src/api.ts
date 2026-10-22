@@ -44,6 +44,15 @@ import { request } from './lib/client';
 
 function endpoints(scope: 'host' | 'guest') {
   const call = <T>(path: string, init?: RequestInit) => request<T>(path, init, scope);
+
+  /**
+   * Where the photo routes begin, which differs by who is asking.
+   *
+   * The deletions and the download list serve both audiences, and the public ones
+   * cannot see a host's token — so the console's copies live under `host/` where the
+   * authorizer does. The handlers are the same; only the door changes.
+   */
+  const photoBase = scope === 'host' ? '/host/photos' : '/photos';
   const json = (method: string, body: unknown): RequestInit => ({
     method,
     body: JSON.stringify(body),
@@ -100,13 +109,17 @@ function endpoints(scope: 'host' | 'guest') {
       if (filters.rollId) query.set('rollId', filters.rollId);
       if (filters.favorite) query.set('favorite', '1');
       const suffix = query.toString();
-      return call<ListPhotosResponse>(`/events/${eventId}/photos${suffix ? `?${suffix}` : ''}`);
+      // The console reads its own copy of this route, behind the authorizer: the public
+      // one cannot see a host's token, and would answer with the gallery minus the
+      // photos the host is actually asking about.
+      const base = scope === 'host' ? `/events/${eventId}/host/photos` : `/events/${eventId}/photos`;
+      return call<ListPhotosResponse>(`${base}${suffix ? `?${suffix}` : ''}`);
     },
     getPhoto: (photoId: string) => call<PhotoResponse>(`/photos/${photoId}`),
     updatePhoto: (photoId: string, payload: UpdatePhotoPayload) =>
       call<PhotoResponse>(`/photos/${photoId}`, json('PATCH', payload)),
     deletePhoto: (photoId: string) =>
-      call<void>(`/photos/${photoId}`, { method: 'DELETE' }),
+      call<void>(`${photoBase}/${photoId}`, { method: 'DELETE' }),
     react: (photoId: string, emoji: ReactionEmoji) =>
       call<ReactionResponse>(`/photos/${photoId}/reaction`, json('PUT', { emoji })),
     unreact: (photoId: string, emoji: ReactionEmoji) =>
@@ -118,11 +131,13 @@ function endpoints(scope: 'host' | 'guest') {
     createComment: (photoId: string, body: string) =>
       call<{ comment: PhotoComment }>(`/photos/${photoId}/comments`, json('POST', { body })),
     deleteComment: (photoId: string, commentId: string) =>
-      call<void>(`/photos/${photoId}/comments/${commentId}`, { method: 'DELETE' }),
-    listDownloads: (eventId: string, favoriteOnly = false) =>
-      call<{ photos: Photo[]; event: { name: string; code: string; date: number | null } }>(
-        `/events/${eventId}/downloads${favoriteOnly ? '?favorite=1' : ''}`,
-      ),
+      call<void>(`${photoBase}/${photoId}/comments/${commentId}`, { method: 'DELETE' }),
+    listDownloads: (eventId: string, favoriteOnly = false) => {
+      const base = scope === 'host' ? `/events/${eventId}/host/downloads` : `/events/${eventId}/downloads`;
+      return call<{ photos: Photo[]; event: { name: string; code: string; date: number | null } }>(
+        `${base}${favoriteOnly ? '?favorite=1' : ''}`,
+      );
+    },
 
     // --- rolls --------------------------------------------------------------
     startRoll: (eventId: string, shotLimit?: number) =>

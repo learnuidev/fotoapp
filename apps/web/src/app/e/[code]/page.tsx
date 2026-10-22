@@ -174,7 +174,6 @@ export default function GuestEventPage({ params }: { params: { code: string } })
             viewerGuestId={guest?.guestId}
             allowComments={event.settings.allowComments}
             allowReactions={event.settings.allowReactions}
-            filmLook={event.settings.filmLook}
             onChanged={() => void photos.refetch()}
             emptyTitle={
               event.settings.cameraMode === 'roll' ? 'The rolls are still in the camera' : 'No photos yet'
@@ -242,8 +241,7 @@ export default function GuestEventPage({ params }: { params: { code: string } })
                       viewerGuestId={guest?.guestId}
                       allowComments={event.settings.allowComments}
                       allowReactions={event.settings.allowReactions}
-                      filmLook={event.settings.filmLook}
-                      emptyTitle="An empty roll"
+                                emptyTitle="An empty roll"
                       emptyBody="Developed with nothing on it — it happens."
                     />
                   ) : (

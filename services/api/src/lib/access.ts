@@ -90,7 +90,6 @@ export function mergeSettings(
     'allowDownloads',
     'challengesEnabled',
     'slideshowEnabled',
-    'filmLook',
   ];
   for (const flag of flags) {
     const value = patch[flag];

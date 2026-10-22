@@ -27,6 +27,7 @@ export async function countsFor(eventId: string): Promise<EventCounts> {
   return {
     photos: photoRows.filter((p) => p.status === 'visible').length,
     pending: photoRows.filter((p) => p.status === 'pending').length,
+    hidden: photoRows.filter((p) => p.status === 'hidden').length,
     guests: guestRows.length,
     reactions: reactionRows.length,
     comments: commentRows.length,

@@ -27,7 +27,7 @@ export function EventCard({ event }: { event: Event }) {
             <img
               src={event.coverUrl}
               alt=""
-              className={cn('size-full object-cover', event.settings.filmLook && 'film')}
+              className="size-full object-cover"
             />
           ) : (
             <div className="grid size-full place-items-center text-3xl">

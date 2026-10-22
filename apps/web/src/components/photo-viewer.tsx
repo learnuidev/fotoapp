@@ -14,7 +14,7 @@ import {
   X,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { REACTIONS, type Photo, type ReactionEmoji } from '@foto/types';
+import { REACTIONS, type Challenge, type Photo, type ReactionEmoji } from '@foto/types';
 import {
   Button,
   Dialog,
@@ -28,6 +28,7 @@ import {
   formatMoment,
 } from '@foto/ui';
 import { PhotoDetails } from './photo-details';
+import { PromptPicker } from './prompt-picker';
 import {
   useComments,
   useCreateComment,
@@ -47,6 +48,8 @@ export interface PhotoViewerProps {
   viewerGuestId?: string;
   allowComments: boolean;
   allowReactions: boolean;
+  /** The event's prompts, so a host can file a photo under one after the fact. */
+  challenges?: Challenge[];
   onClose: () => void;
   onChanged?: () => void;
 }
@@ -66,6 +69,7 @@ export function PhotoViewer({
   viewerGuestId,
   allowComments,
   allowReactions,
+  challenges,
   onClose,
   onChanged,
 }: PhotoViewerProps) {
@@ -85,6 +89,7 @@ export function PhotoViewer({
           viewerGuestId={viewerGuestId}
           allowComments={allowComments}
           allowReactions={allowReactions}
+          challenges={challenges}
           onClose={onClose}
           onChanged={onChanged}
         />
@@ -100,6 +105,7 @@ function ViewerBody({
   viewerGuestId,
   allowComments,
   allowReactions,
+  challenges,
   onClose,
   onChanged,
 }: PhotoViewerProps & { photo: Photo }) {
@@ -248,8 +254,17 @@ function ViewerBody({
 
         {photo.challengeTitle && (
           <p className="text-xs text-muted-foreground">
-            {photo.challengeEmoji} shot for “{photo.challengeTitle}”
+            {photo.challengeEmoji} filed under “{photo.challengeTitle}”
           </p>
+        )}
+
+        {isHost && challenges && challenges.length > 0 && (
+          <PromptPicker
+            photo={photo}
+            challenges={challenges}
+            eventId={eventId}
+            onChanged={onChanged}
+          />
         )}
 
         <PhotoDetails photo={photo} />
