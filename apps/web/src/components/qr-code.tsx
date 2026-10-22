@@ -84,6 +84,9 @@ export function QrCode({
   const module = size / total;
   const pad = Math.max(8, Math.round(module * quiet));
 
+  const background = '#ffffff';
+  const modules = '#171310';
+
   return (
     <div
       className={cn(
@@ -116,10 +119,10 @@ export function QrCode({
           style={{ display: 'block' }}
           shapeRendering="geometricPrecision"
         >
-          <rect width={total} height={total} fill="#ffffff" />
+          <rect width={total} height={total} fill={background} />
 
           {/* --- the data, as dots --------------------------------------------- */}
-          <g fill="#171310">
+          <g fill={modules}>
             {matrix.dark.map((row, rowIndex) =>
               row.map((isDark, columnIndex) => {
                 if (!isDark) return null;
@@ -137,7 +140,7 @@ export function QrCode({
           </g>
 
           {/* --- the three finder patterns, as ring and dot -------------------- */}
-          <g fill="#171310">
+          <g fill={modules}>
             {finderOrigins(matrix.size).map(([top, left]) => {
               const x = left + quiet;
               const y = top + quiet;
@@ -152,7 +155,7 @@ export function QrCode({
                     rx={2.2}
                     ry={2.2}
                     fill="none"
-                    stroke="#171310"
+                    stroke={modules}
                     strokeWidth={1}
                   />
                   {/* The pupil: a 3×3 rounded dot in the middle. */}

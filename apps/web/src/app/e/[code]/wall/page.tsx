@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { Heart, Pause, Play, ScanLine } from 'lucide-react';
 import { Badge, Button, Mark, cn, plural } from '@foto/ui';
 import { useWall } from '@foto/api';
-import { QrCode } from '@/components/qr-code';
 
 /**
  * The wall.
@@ -21,8 +20,9 @@ import { QrCode } from '@/components/qr-code';
  *   frame every time somebody shoots is a wall nobody looks at.
  * - **It holds a paused frame.** Somebody reading a caption out loud is a thing
  *   that happens; space pauses and resumes.
- * - **It has the code on it.** The wall is the best possible advert for the code —
- *   the people looking at it are the people who have not joined yet.
+ * - **It carries no join code.** The wall is a photograph with a room in front of it;
+ *   the code lives on the card, in the album, and in the link a host shares, and a
+ *   screen full of guest photos is not improved by furniture in its corner.
  */
 /**
  * The slideshow, tracked by *which photo is on screen* rather than by an index.
@@ -133,7 +133,6 @@ export default function WallPage({ params }: { params: { code: string } }) {
   }
 
   const event = wall.data.event;
-  const joinUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/j/${code}`;
 
   return (
     <div className="relative flex min-h-dvh flex-col overflow-hidden bg-black">
@@ -160,14 +159,20 @@ export default function WallPage({ params }: { params: { code: string } }) {
           {/* --- what is under it ------------------------------------------ */}
           {wall.data.event.settings.wallCaptions && (
           <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent px-8 pb-8 pt-24">
-            <div className="mx-auto flex w-full max-w-5xl items-end justify-between gap-6">
+            <div className="mx-auto flex w-full max-w-5xl items-end gap-6 pr-20">
               <div className="min-w-0">
-                <div className="flex items-center gap-2 text-white/80">
+                <div className="flex flex-wrap items-center gap-2 text-white/80">
                   <span className="text-lg leading-none">{photo.guestEmoji}</span>
                   <span className="text-sm font-medium">{photo.guestName}</span>
                   {photo.challengeTitle && (
                     <span className="text-xs text-white/50">
                       · {photo.challengeEmoji} {photo.challengeTitle}
+                    </span>
+                  )}
+                  {photo.reactions.total > 0 && (
+                    <span className="flex items-center gap-1 text-xs text-white/60">
+                      <Heart className="size-3.5 fill-current text-rose-400" />
+                      {photo.reactions.total}
                     </span>
                   )}
                 </div>
@@ -178,15 +183,7 @@ export default function WallPage({ params }: { params: { code: string } }) {
                 )}
               </div>
 
-              <div className="flex shrink-0 items-center gap-3 text-white/70">
-                {photo.reactions.total > 0 && (
-                  <span className="flex items-center gap-1 text-sm">
-                    <Heart className="size-4 fill-current text-rose-400" />
-                    {photo.reactions.total}
-                  </span>
-                )}
-                <span className="font-mono text-xs tracking-[0.3em]">{code}</span>
-              </div>
+
             </div>
           </div>
           )}
@@ -218,15 +215,6 @@ export default function WallPage({ params }: { params: { code: string } }) {
         </div>
 
         <div className="pointer-events-auto flex items-center gap-4">
-          <div className="hidden items-center gap-2 rounded-2xl border border-white/15 bg-black/40 px-3 py-2 backdrop-blur-md sm:flex">
-            {/* Sized to be read from a sofa, not a desk: 72px of code is what a phone
-                across a room can still find, and the wall is black behind it. */}
-            <QrCode value={joinUrl} size={72} quiet={2} mark={false} className="rounded-2xl" />
-            <div className="text-xs text-white/70">
-              <p className="font-medium text-white">Add photos</p>
-              <p className="font-mono tracking-widest">{code}</p>
-            </div>
-          </div>
           <Button
             variant="ghost"
             size="icon-sm"

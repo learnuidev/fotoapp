@@ -46,6 +46,9 @@ projector is a projector. It follows the photo rather than a position in the lis
 poll that brings new photos does not change what the room is looking at; arrivals are
 queued to come up next.
 
+It carries no code and no controls beyond pause: the wall is a photograph with a room
+in front of it, and the join code belongs on the card and in the album.
+
 Its four dials live in the event's settings, because a wedding, a film reveal and a
 conference want three different walls: **which order** it plays (`newest` — live, and
 backwards from what was just shot — or `chronological` by the shutter, so a developed
