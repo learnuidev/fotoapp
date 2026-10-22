@@ -21,6 +21,11 @@ two cameras:
 app, no email. They shoot against the prompts if they feel like it, react to
 everybody else's photos, and can take the album home as a zip if the host allows it.
 
+The console's gallery can be ordered **by upload** (newest first — the live view) or by
+**capture time** (by the shutter, earliest first — how the album is read afterwards, and
+the order in which a developed roll tells the evening). It filters to All, Waiting,
+Stars and Hidden, and keeps a running count on each.
+
 **The host** can add photos of their own from the console's gallery — the one shot
 the photographer sent over, the room before anybody arrived — and they land in the
 album straight away, credited to them, with no roll to develop and no approval to give
@@ -61,9 +66,10 @@ sketched against:
 - **TanStack Query** for every read and write — a mutation owns its invalidation.
 - **AWS**: API Gateway (HTTP API) + **Lambda** + **DynamoDB** + **S3** +
   **CloudFront** + **Cognito**, deployed by **CDK** (`infra/`).
-- `fflate` builds the zip **in the browser**, `react-qr-code` draws the join code as
-  SVG (sharp at projector size, with the mark in the middle at error-correction level
-  `H` so it still scans), and nothing else is a dependency of the product.
+- `fflate` builds the zip **in the browser**, and the join code is drawn as SVG here —
+  `qrcode-generator` supplies the matrix, `components/qr-code.tsx` renders it as round
+  dots with the mark in the middle, at error-correction level `H` so the mark cannot
+  break it. Nothing else is a dependency of the product.
 
 ```
 apps/console        the control room — deploy a stage, start the app against one
