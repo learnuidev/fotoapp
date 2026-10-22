@@ -114,7 +114,7 @@ export function FrontendControls({ stages }: { stages: Stage[] }) {
       )}
 
       {state?.log && state.log.length > 0 && (
-        <pre className="no-scrollbar max-h-64 overflow-y-auto rounded-2xl border border-border bg-black/40 p-4 font-mono text-[11px] leading-relaxed text-muted-foreground">
+        <pre className="terminal no-scrollbar max-h-64 overflow-y-auto rounded-2xl border p-4 font-mono text-[11px] leading-relaxed">
           {state.log.join('\n')}
         </pre>
       )}

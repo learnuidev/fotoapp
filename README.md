@@ -31,9 +31,15 @@ two cameras:
 app, no email. They shoot against the prompts if they feel like it, react to
 everybody else's photos, and can take the album home as a zip if the host allows it.
 
+**The host** can add photos of their own from the console's gallery — the one shot
+the photographer sent over, the room before anybody arrived — and they land in the
+album straight away, credited to them, with no roll to develop and no approval to give
+themselves. They can also star a photo, hide it, delete it, or make it the album cover
+from the same viewer.
+
 **The wall** is `/e/<code>/wall`: a projector screen with no sign-in, polling every
 five seconds, cycling through the evening with the guest's name and the caption under
-each frame. Space pauses it.
+each frame. Space pauses it. It is black on purpose and does not follow the theme.
 
 ---
 
@@ -162,7 +168,7 @@ route per line — so a route cannot exist in one and not the other.
 | --- | --- |
 | `auth` | `/health`, `/me` |
 | `events` | creating, editing, closing and deleting an event; its guests, prompts and analytics |
-| `photos` | reserving an upload, recording a shot, the gallery, moderation, reactions, comments, downloads |
+| `photos` | reserving an upload, recording a shot, the gallery, moderation, reactions, comments, downloads — and the host's own upload, on `host/` routes behind the authorizer |
 | `join` | what a code opens, joining, the public gallery, the wall |
 | `rolls` | starting a roll, developing one, developing all of them |
 | `challenges` | the prompts and what they produced |
@@ -211,3 +217,22 @@ Uploads never pass through a Lambda:
 Reading goes through CloudFront in front of a private bucket, and every photo the API
 returns carries its own `url` — a client never learns a storage key it could build a
 URL from.
+
+There are two doors to step 1, and they are the same handler:
+
+- `POST /events/{id}/uploads` is **public at the gateway**, because a guest has no
+  Cognito token to present and this service verifies guest tokens itself;
+- `POST /events/{id}/host/uploads` is **behind the Cognito authorizer**, because a
+  public route cannot see a host's claims — which is how the console adds a photo
+  without the host having to join their own event as a guest.
+
+A host's own uploads are filed under a guest row made for them (role `host`, avatar
+🎩), so the roster, the leaderboard and every photo credit name them like anybody
+else. Their photos skip the roll and the approval queue: the disposable camera is a
+guest experience, and a creator waiting on their own approval would be a queue of one.
+
+## Themes
+
+Light is the default — warm paper, dark ink, terracotta — and dark is one press away,
+in the header of every page and in the guest album's footer. The wall is the exception
+and is always black: it is a projector.

@@ -48,12 +48,45 @@
 }
 
 /*
- * The palette is one evening: lamp light, warm paper, and the amber of a film
- * box. It is dark by default and there is no light mode, which is a product
- * decision rather than an omission — this is an app used in a dim room with a
- * drink in the other hand, and a white gallery at midnight is a flashbang.
+ * Two themes, one evening.
+ *
+ * **Light is the default**: warm paper, dark ink, and the amber of a film box — the
+ * palette of a printed wedding card rather than of a phone at midnight. It is the
+ * theme a host checking their gallery at breakfast, and a guest opening a link from
+ * a group chat in daylight, both want first.
+ *
+ * **Dark** is the same evening with the lights off, one toggle away, and it is what
+ * the wall uses regardless — a projector screen is a projector screen (see
+ * `e/[code]/wall`, which is black on purpose and does not follow the theme).
+ *
+ * The two share every token name, so nothing in the components knows which it is
+ * drawing except the few places that overlay text on a photo.
  */
 :root {
+  --background: oklch(0.985 0.006 85);
+  --foreground: oklch(0.22 0.014 60);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.014 60);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.22 0.014 60);
+  /* The primary is deeper than the dark theme's amber so that white on it is legible. */
+  --primary: oklch(0.58 0.16 42);
+  --primary-foreground: oklch(0.99 0.008 85);
+  --secondary: oklch(0.95 0.012 85);
+  --secondary-foreground: oklch(0.28 0.016 60);
+  --muted: oklch(0.955 0.01 85);
+  --muted-foreground: oklch(0.47 0.018 70);
+  --accent: oklch(0.93 0.02 80);
+  --accent-foreground: oklch(0.24 0.016 60);
+  --destructive: oklch(0.55 0.2 25);
+  --destructive-foreground: oklch(0.99 0.008 85);
+  --border: oklch(0.88 0.014 80 / 90%);
+  --input: oklch(0.86 0.016 80 / 90%);
+  --ring: oklch(0.58 0.16 42 / 45%);
+  --radius: 0.9rem;
+}
+
+.dark {
   --background: oklch(0.16 0.012 60);
   --foreground: oklch(0.96 0.008 75);
   --card: oklch(0.21 0.014 60);
@@ -73,7 +106,6 @@
   --border: oklch(0.32 0.014 60 / 70%);
   --input: oklch(0.34 0.016 60 / 80%);
   --ring: oklch(0.78 0.15 55 / 60%);
-  --radius: 0.9rem;
 }
 
 @layer base {
@@ -83,15 +115,19 @@
 
   html {
     @apply font-sans antialiased;
+    color-scheme: light;
+  }
+
+  html.dark {
     color-scheme: dark;
   }
 
   body {
     @apply bg-background text-foreground;
-    /* A single soft light from the top of the page, as if the room had a lamp in it. */
+    /* A single soft light from the top of the page, as if a lamp were on in the room. */
     background-image: radial-gradient(
       120% 80% at 50% -20%,
-      color-mix(in oklab, var(--primary) 12%, transparent),
+      color-mix(in oklab, var(--primary) 10%, transparent),
       transparent 60%
     );
     background-repeat: no-repeat;

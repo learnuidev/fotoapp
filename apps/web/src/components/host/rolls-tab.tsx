@@ -29,7 +29,7 @@ export function RollsTab({ event }: { event: Event }) {
       <Card>
         <CardContent className="flex flex-wrap items-center justify-between gap-4 p-5">
           <div className="flex items-start gap-3">
-            <span className="grid size-10 place-items-center rounded-full bg-violet-500/15 text-violet-300">
+            <span className="grid size-10 place-items-center rounded-full bg-violet-500/15 text-violet-700 dark:text-violet-300">
               <Film className="size-5" />
             </span>
             <div>
@@ -87,7 +87,7 @@ export function RollsTab({ event }: { event: Event }) {
       )}
 
       {list.map((roll) => (
-        <Card key={roll.rollId} className={cn(roll.status === 'shooting' && 'border-violet-400/30')}>
+        <Card key={roll.rollId} className={cn(roll.status === 'shooting' && 'border-violet-500/30')}>
           <CardContent className="flex flex-col gap-3 p-5">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2.5">

@@ -24,8 +24,10 @@ const buttonVariants = cva(
         ghost: 'hover:bg-accent/70 hover:text-accent-foreground',
         destructive: 'bg-destructive text-destructive-foreground hover:brightness-110',
         link: 'text-primary underline-offset-4 hover:underline',
+        // Ink-on-paper in the light theme, paper-on-ink in the dark one: the same
+        // button, drawn by whichever palette is in play.
         shutter:
-          'relative size-20 rounded-full border-4 border-white/70 bg-white text-black shadow-2xl transition-transform active:scale-95 [&_svg]:size-7',
+          'relative size-20 rounded-full border-4 border-foreground/20 bg-foreground text-background shadow-2xl transition-transform active:scale-95 [&_svg]:size-7',
       },
       size: {
         default: 'h-10 px-5',

@@ -6,15 +6,16 @@ import {
   Eye,
   EyeOff,
   Heart,
+  Image as ImageIcon,
   Loader2,
   Send,
   Star,
   Trash2,
   X,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { REACTIONS, type Photo, type ReactionEmoji } from '@foto/types';
 import {
-  Badge,
   Button,
   Dialog,
   DialogContent,
@@ -33,6 +34,7 @@ import {
   useDeletePhoto,
   useDeleteOwnPhoto,
   useReact,
+  useSetCover,
   useUnreact,
   useUpdatePhoto,
 } from '@foto/api';
@@ -108,6 +110,7 @@ function ViewerBody({
   const react = useReact(eventId);
   const unreact = useUnreact(eventId);
   const updatePhoto = useUpdatePhoto(eventId);
+  const setCover = useSetCover(eventId);
   const deletePhoto = useDeletePhoto(eventId);
   const deleteOwn = useDeleteOwnPhoto(eventId);
   const comments = useComments(photo.photoId);
@@ -144,7 +147,9 @@ function ViewerBody({
   return (
     <div className="flex flex-col">
       {/* --- the photo itself ---------------------------------------------- */}
-      <div className="relative bg-black/40">
+      {/* The frame around a contained photo is dark in both themes: it is a lightbox,
+          and grey behind a photograph reads as a mistake rather than a mat. */}
+      <div className="relative bg-black/80">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={photo.url}
@@ -160,8 +165,8 @@ function ViewerBody({
           <X className="size-4" />
         </button>
         {photo.rollId && (
-          <div className="absolute left-3 top-3">
-            <Badge variant="film">from a roll</Badge>
+          <div className="absolute left-3 top-3 rounded-full bg-black/60 px-2.5 py-0.5 text-[11px] font-medium text-white/90 backdrop-blur-sm">
+            from a roll
           </div>
         )}
       </div>
@@ -205,6 +210,20 @@ function ViewerBody({
                 <Button
                   variant="ghost"
                   size="icon-sm"
+                  aria-label="Use as the album cover"
+                  title="Use as the album cover"
+                  disabled={busy || photo.status !== 'visible'}
+                  onClick={() =>
+                    setCover.mutate(photo.photoId, {
+                      onSuccess: () => toast.success('That is the album cover now'),
+                    })
+                  }
+                >
+                  <ImageIcon />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
                   aria-label={photo.status === 'hidden' ? 'Put back in the gallery' : 'Hide'}
                   disabled={busy}
                   onClick={() =>
@@ -233,8 +252,8 @@ function ViewerBody({
         )}
 
         {isHost && photo.status === 'pending' && (
-          <div className="flex items-center justify-between gap-3 rounded-2xl border border-amber-400/30 bg-amber-400/10 px-4 py-3">
-            <p className="text-sm text-amber-200">Waiting for you. Nobody else can see this yet.</p>
+          <div className="flex items-center justify-between gap-3 rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3">
+            <p className="text-sm text-amber-800 dark:text-amber-200">Waiting for you. Nobody else can see this yet.</p>
             <Button
               size="sm"
               disabled={busy}

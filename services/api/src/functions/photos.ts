@@ -15,7 +15,7 @@
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { ulid } from 'ulid';
 import { DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, REACTIONS, type ReactionEmoji } from '@foto/types';
-import { guestOf, hostOf, requireGuestOf, requireHost } from '../lib/auth';
+import { guestOf, hostOf, requireGuestOf, requireHost, type Host } from '../lib/auth';
 import { countsFor } from '../lib/counts';
 import { currentSettings, eventById, galleryVisibleTo, requireOpen } from '../lib/access';
 import {
@@ -49,7 +49,7 @@ import {
 } from '../lib/rolls';
 import { getStore } from '../lib/store';
 import { challenges, comments, events, guests, photos, reactions, rolls } from '../types/collections';
-import type { EventRow, PhotoRow } from '../types/records';
+import type { EventRow, GuestRow, PhotoRow } from '../types/records';
 
 /** The event named in the path, and the viewer asking about it. */
 async function loadContext(event: APIGatewayProxyEvent): Promise<{
@@ -96,6 +96,41 @@ async function reserve(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
   return created(ticket);
 }
 
+/** The avatar a host's own uploads are credited with, when they have no guest row. */
+const HOST_EMOJI = '🎩';
+
+/**
+ * The guest row a host's own photos are filed under.
+ *
+ * A photo is attributed to a guest, and a host who uploads from the console is not
+ * one — they never joined, and should not have to. Rather than teach every read about
+ * a second kind of author, the console gives them a guest row of their own: role
+ * `host`, keyed by their account so it is made once, and shown on the roster as
+ * themselves. It is the same row their phone would have made by joining, which is why
+ * nothing downstream needs to know the difference.
+ */
+async function hostGuestRow(event: EventRow, host: Host): Promise<GuestRow> {
+  const store = getStore();
+  const deviceKey = `${event.eventId}#host:${host.userId}`;
+  const [existing] = await store.query(guests, 'deviceKey', deviceKey);
+  if (existing) return existing;
+
+  const now = Date.now();
+  const row: GuestRow = {
+    guestId: ulid(),
+    eventId: event.eventId,
+    deviceKey,
+    name: host.name || 'The host',
+    emoji: HOST_EMOJI,
+    role: 'host',
+    joinedAt: now,
+    lastSeenAt: now,
+    openRollId: null,
+  };
+  await store.put(guests, row);
+  return row;
+}
+
 /**
  * Records a shot.
  *
@@ -134,14 +169,31 @@ async function createPhoto(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
     if (challenge && challenge.eventId === row.eventId) challengeId = challenge.challengeId;
   }
 
-  // Who shot it: the guest behind the token. A host who has not joined cannot post
-  // as nobody, so they are told to join, which is one tap and gives them an avatar.
+  /**
+   * Who is shooting, and what that means for where the photo lands.
+   *
+   * Three cases, and the third is the console's:
+   *
+   * - a guest, whose photo is theirs and follows the event's rules — a roll, or the
+   *   approval queue;
+   * - a host who *joined* their own event from a phone, who is a guest with a host
+   *   role and is treated exactly like one, because that is what they are;
+   * - a host adding a photo from the console, who is neither waiting on their own
+   *   approval nor holding a camera they cannot see into. Their photo goes straight
+   *   into the album: a creator adding the one professional shot to their own
+   *   wedding should not have to develop a roll to look at it.
+   */
   const store = getStore();
-  const guestRow = guestId ? await store.get(guests, guestId) : undefined;
+  const fromConsole = !guestId && isHost;
+  const guestRow = guestId
+    ? await store.get(guests, guestId)
+    : isHost
+      ? await hostGuestRow(row, hostOf(event)!)
+      : undefined;
   if (!guestRow) throw new HttpError(403, 'Join this event before adding photos');
 
   const now = Date.now();
-  const onRoll = settings.cameraMode === 'roll';
+  const onRoll = settings.cameraMode === 'roll' && !fromConsole;
 
   let rollRow = null;
   if (onRoll) {
@@ -163,9 +215,14 @@ async function createPhoto(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
     caption: (body.caption ?? '').trim().slice(0, 280),
     takenAt: typeof body.takenAt === 'number' ? body.takenAt : now,
     createdAt: now,
-    status: onRoll ? 'developing' : settings.photoApproval ? 'pending' : 'visible',
+    status: onRoll
+      ? 'developing'
+      : fromConsole || !settings.photoApproval
+        ? 'visible'
+        : 'pending',
     challengeId,
-    rollId: rollRow?.rollId ?? null,
+    // Omitted, not null: `rollId` is an index key, and DynamoDB will not index a NULL.
+    ...(rollRow ? { rollId: rollRow.rollId } : {}),
     favorite: false,
   };
 

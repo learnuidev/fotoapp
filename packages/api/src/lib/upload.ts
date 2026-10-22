@@ -88,9 +88,18 @@ export async function uploadPhoto(
   options: UploadPhotoOptions = {},
 ): Promise<CreatePhotoResponse> {
   const scope = options.scope ?? 'guest';
+  /**
+   * Which pair of routes this upload goes through.
+   *
+   * A host has a Cognito token and no guest session, and the guest routes are public at
+   * the gateway by necessity — a guest token is not a Cognito token. So the host's
+   * upload takes the `host/` pair, which is behind the authorizer and lands in the same
+   * two handlers. It is the same upload; only the door differs.
+   */
+  const base = scope === 'host' ? `/events/${eventId}/host` : `/events/${eventId}`;
 
   const reserved = await request<ReserveUploadResponse>(
-    `/events/${eventId}/uploads`,
+    `${base}/uploads`,
     {
       method: 'POST',
       body: JSON.stringify({
@@ -106,7 +115,7 @@ export async function uploadPhoto(
   const size = await readImageSize(file);
 
   return request<CreatePhotoResponse>(
-    `/events/${eventId}/photos`,
+    `${base}/photos`,
     {
       method: 'POST',
       body: JSON.stringify({

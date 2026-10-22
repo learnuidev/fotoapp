@@ -64,7 +64,15 @@ export interface PhotoRow extends NameFields {
   createdAt: number;
   status: 'visible' | 'pending' | 'hidden' | 'developing';
   challengeId: string | null;
-  rollId: string | null;
+  /**
+   * The roll this frame is on, **absent** rather than null when it is on none.
+   *
+   * `rollId` is the partition key of an index, and DynamoDB refuses an item whose
+   * indexed key is written as NULL — an item with no roll simply has no attribute,
+   * which is also what keeps it out of that index. So this is optional, and the code
+   * that writes a photo must omit it rather than set it to null.
+   */
+  rollId?: string | null;
   favorite: boolean;
 }
 

@@ -71,7 +71,7 @@ export default async function FrontendPage() {
         <p className="text-sm text-muted-foreground">
           The console is a convenience over two commands that work on their own.
         </p>
-        <pre className="rounded-2xl border border-border bg-black/40 p-4 font-mono text-[11px] text-muted-foreground">{`# the five values a stage hands the app
+        <pre className="terminal rounded-2xl border p-4 font-mono text-[11px]">{`# the five values a stage hands the app
 aws cloudformation describe-stacks --stack-name FotoApiStack-dev \\
   --query "Stacks[0].Outputs[?OutputKey=='ApiUrl'].OutputValue" --output text
 aws ssm get-parameter --name /foto/dev/cognito/user-pool-id --query Parameter.Value --output text

@@ -118,7 +118,7 @@ export function DeployControls({
       {run && (
         <pre
           ref={scroller}
-          className="no-scrollbar max-h-72 overflow-y-auto rounded-2xl border border-border bg-black/40 p-4 font-mono text-[11px] leading-relaxed text-muted-foreground"
+          className="terminal no-scrollbar max-h-72 overflow-y-auto rounded-2xl border p-4 font-mono text-[11px] leading-relaxed"
         >
           {`$ ${run.command}\n`}
           {lines.join('\n')}

@@ -13,6 +13,7 @@
 import { spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import type { Run, RunAction, Stage } from '@/lib/types';
+import { stripAnsi } from './output';
 import { cdkBin, childEnv, paths } from './repo';
 import { sharedState } from './shared';
 
@@ -73,9 +74,10 @@ export function startRun(action: RunAction, stage: Stage): Run {
   });
 
   const push = (chunk: Buffer) => {
-    for (const line of chunk.toString('utf8').split(/\r?\n/)) {
+    for (const raw of chunk.toString('utf8').split(/\r?\n/)) {
       // CloudFormation prints its progress as carriage-returned rewrites of one line;
       // after the split above they are separate lines, and blank ones are noise.
+      const line = stripAnsi(raw).trimEnd();
       if (!line.trim()) continue;
       run.lines.push(line);
     }

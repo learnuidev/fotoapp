@@ -5,6 +5,7 @@ import { Heart, Images, Inbox, Loader2 } from 'lucide-react';
 import type { Event } from '@foto/types';
 import { Card, CardContent, Skeleton, cn, plural } from '@foto/ui';
 import { useHostPhotos } from '@foto/api';
+import { AddPhotos } from '@/components/host/add-photos';
 import { Gallery } from '@/components/gallery';
 import { DownloadAlbum } from '@/components/download-album';
 
@@ -47,6 +48,7 @@ export function GalleryTab({ event }: { event: Event }) {
 
         <div className="flex items-center gap-2">
           {photos.isFetching && <Loader2 className="size-3.5 animate-spin text-muted-foreground" />}
+          {event.closedAt === null && <AddPhotos eventId={event.eventId} />}
           <DownloadAlbum photos={list} eventName={event.name} label="Download these" />
         </div>
       </div>
@@ -75,7 +77,7 @@ export function GalleryTab({ event }: { event: Event }) {
               ? 'Every photo has been dealt with. Approve-only mode means new ones show up here.'
               : filter === 'favorite'
                 ? 'Tap a photo and press the star; those are the ones the wall plays first and the download keeps.'
-                : 'The album fills up as guests shoot. Share the code and watch it start.'
+                : 'The album fills up as guests shoot — or add the first one yourself with “Add photos”. Share the code and watch the rest arrive.'
           }
         />
       )}

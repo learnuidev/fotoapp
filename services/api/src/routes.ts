@@ -227,6 +227,33 @@ export const ROUTES: Route[] = [
     summary: 'The gallery, filtered by status, guest, prompt, roll or favourites.',
     handler: photoHandlers.list,
   },
+  /**
+   * The console's own upload, behind the authorizer.
+   *
+   * `/uploads` and `/photos` are public at the gateway because a guest has no Cognito
+   * token to present, and this service never verifies one itself. That leaves those two
+   * routes unable to see a host's claims — so a host adding a photo from the console
+   * posts to the same handlers through these two routes, which *are* behind the
+   * authorizer. Two paths, one implementation: `photoHandlers.reserve` and `.create`.
+   */
+  {
+    domain: 'photos',
+    method: 'POST',
+    path: 'events/{eventId}/host/uploads',
+    audience: 'host',
+    authorized: true,
+    summary: 'Reserves a key for a photo the host is adding from the console.',
+    handler: photoHandlers.reserve,
+  },
+  {
+    domain: 'photos',
+    method: 'POST',
+    path: 'events/{eventId}/host/photos',
+    audience: 'host',
+    authorized: true,
+    summary: 'Records a photo the host added, straight into the album.',
+    handler: photoHandlers.create,
+  },
   {
     domain: 'photos',
     method: 'GET',

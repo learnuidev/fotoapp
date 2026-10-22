@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { ThemeProvider } from 'next-themes';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { configureApi, ApiError } from '@foto/api';
 import { TooltipProvider, Toaster } from '@foto/ui';
@@ -43,12 +44,22 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
   if (!isAuthConfigured) return <ConfigurationRequired />;
 
   return (
-    <QueryClientProvider client={client}>
-      <TooltipProvider delayDuration={200}>
-        {children}
-        <Toaster />
-      </TooltipProvider>
-    </QueryClientProvider>
+    /**
+     * Light by default, dark by choice.
+     *
+     * `attribute="class"` is what `app/globals.css` keys its two palettes off, and
+     * `enableSystem` is off on purpose: a guest scanning a card at 8pm should get the
+     * album the host designed, not the phone's night mode deciding for them. The toggle
+     * in the header is the way to the other one.
+     */
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
+      <QueryClientProvider client={client}>
+        <TooltipProvider delayDuration={200}>
+          {children}
+          <Toaster />
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
 

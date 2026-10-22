@@ -28,7 +28,7 @@ export async function statsFor(event: EventRow): Promise<EventStats> {
 
   const guestNames = new Map(guestRows.map((guest) => [guest.guestId, guest] as const));
   const byHour = new Map<string, number>();
-  const byGuest = new Map<string, { count: number; emoji: string }>();
+  const byGuest = new Map<string, { count: number; emoji: string; name: string }>();
   const byChallenge = new Map<string, number>();
   const byReaction = new Map<string, number>();
 
@@ -46,6 +46,9 @@ export async function statsFor(event: EventRow): Promise<EventStats> {
     byGuest.set(photo.guestId, {
       count: (guest?.count ?? 0) + 1,
       emoji: guest?.emoji ?? photo.guestEmoji,
+      // The photo carries the name it was shot under, which is the only name a host
+      // who never joined the roster has.
+      name: guest?.name ?? photo.guestName,
     });
 
     if (photo.challengeId) {
@@ -66,7 +69,7 @@ export async function statsFor(event: EventRow): Promise<EventStats> {
 
   const topGuests: StatBar[] = [...byGuest.entries()]
     .map(([guestId, entry]) => ({
-      label: guestNames.get(guestId)?.name ?? 'A guest',
+      label: guestNames.get(guestId)?.name ?? entry.name ?? 'A guest',
       value: entry.count,
       emoji: entry.emoji,
     }))
@@ -92,7 +95,7 @@ export async function statsFor(event: EventRow): Promise<EventStats> {
     pendingCount: photoRows.filter((photo) => photo.status === 'pending').length,
     hiddenCount: photoRows.filter((photo) => photo.status === 'hidden').length,
     guestCount: guestRows.length,
-    rollCount: photoRows.filter((photo) => photo.rollId !== null).length,
+    rollCount: photoRows.filter((photo) => Boolean(photo.rollId)).length,
     reactionCount: reactionRows.length,
     commentCount: commentRows.length,
     favoriteCount,

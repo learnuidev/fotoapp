@@ -219,7 +219,7 @@ export function toPhoto(row: PhotoRow, ctx: PhotoContext): Photo {
     challengeId: row.challengeId,
     challengeTitle: challenge?.title ?? null,
     challengeEmoji: challenge?.emoji ?? null,
-    rollId: row.rollId,
+    rollId: row.rollId ?? null,
     reactions: ctx.reactions.get(row.photoId) ?? EMPTY_REACTIONS,
     commentCount: ctx.commentCounts.get(row.photoId) ?? 0,
     favorite: row.favorite,
@@ -285,7 +285,7 @@ export function toChallenge(row: ChallengeRow, photoCount: number): Challenge {
 
 export function toRoll(row: RollRow): Roll {
   return {
-    rollId: row.rollId,
+    rollId: row.rollId ?? null,
     eventId: row.eventId,
     guestId: row.guestId,
     guestName: row.guestName,

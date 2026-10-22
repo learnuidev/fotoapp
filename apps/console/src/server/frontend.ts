@@ -13,6 +13,7 @@
  */
 import { spawn, type ChildProcess } from 'node:child_process';
 import type { FrontendState, Stage } from '@/lib/types';
+import { stripAnsi } from './output';
 import { childEnv, paths } from './repo';
 import { sharedState } from './shared';
 
@@ -35,7 +36,8 @@ const managed: Managed = (box.managed ??= {
 });
 
 function log(line: string): void {
-  for (const part of line.split(/\r?\n/)) {
+  for (const raw of line.split(/\r?\n/)) {
+    const part = stripAnsi(raw).trimEnd();
     if (!part.trim()) continue;
     managed.state.log.push(part);
   }

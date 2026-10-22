@@ -5,6 +5,7 @@
  */
 export * from './components/emoji-avatar';
 export * from './components/mark';
+export * from './components/theme-toggle';
 export * from './components/ui/badge';
 export * from './components/ui/button';
 export * from './components/ui/card';

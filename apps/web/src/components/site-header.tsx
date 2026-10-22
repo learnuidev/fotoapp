@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LogOut } from 'lucide-react';
 import { useHostSession } from '@foto/auth';
-import { Button, Mark, cn } from '@foto/ui';
+import { Button, Mark, ThemeToggle, cn } from '@foto/ui';
 
 /**
  * The thin bar at the top of the marketing and console pages.
@@ -30,6 +30,7 @@ export function SiteHeader({ className }: { className?: string }) {
         </Link>
 
         <nav className="flex items-center gap-1 text-sm">
+          <ThemeToggle />
           {ready && user ? (
             <>
               <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">

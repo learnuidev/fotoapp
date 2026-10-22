@@ -88,8 +88,10 @@ async function createGuest(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
   const store = getStore();
   const deviceKey = `${row.eventId}#${deviceId}`;
   const [existing] = await store.query(guests, 'deviceKey', deviceKey);
-  const host = hostOf(event);
-  const isHostOfEvent = host?.userId === row.hostId;
+  // Joining is a public route, so there are no host claims to read here even when the
+  // person joining *is* the host — the host's own row is the one their console upload
+  // makes (`photos.ts`), and that is what carries the host badge on the roster.
+  const isHostOfEvent = false;
 
   let guestRow: GuestRow;
   let isNew = false;

@@ -15,6 +15,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  ThemeToggle,
   plural,
   formatMoment,
 } from '@foto/ui';
@@ -223,7 +224,7 @@ export default function GuestEventPage({ params }: { params: { code: string } })
                 <CardContent className="flex flex-col gap-3 p-5">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Film className="size-4 text-violet-300" />
+                      <Film className="size-4 text-violet-600 dark:text-violet-300" />
                       <span className="text-sm font-medium">
                         {roll.status === 'developed' ? 'Developed' : 'Still in the camera'}
                       </span>
@@ -260,8 +261,11 @@ export default function GuestEventPage({ params }: { params: { code: string } })
       </Tabs>
 
       <footer className="mt-10 flex items-center justify-between border-t border-border/50 pt-5 text-xs text-muted-foreground">
-        <span>
-          Code <span className="font-mono tracking-widest text-foreground">{code}</span>
+        <span className="flex items-center gap-1">
+          <ThemeToggle className="-ml-2" />
+          <span>
+            Code <span className="font-mono tracking-widest text-foreground">{code}</span>
+          </span>
         </span>
         <Link href="/" className="underline-offset-4 hover:underline">
           made with foto

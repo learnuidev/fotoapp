@@ -11,6 +11,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { UpdatePhotoPayload } from '@foto/types';
 import { api } from '../api';
 import { fotoKeys } from '../lib/keys';
+import { uploadPhoto, type UploadPhotoOptions } from '../lib/upload';
 
 export interface PhotoFilters {
   status?: string;
@@ -56,6 +57,26 @@ export function useDeletePhoto(eventId: string) {
   return useMutation({
     mutationFn: (photoId: string) => api.deletePhoto(photoId),
     onSuccess: (_data, photoId) => refresh(photoId),
+  });
+}
+
+/**
+ * A host adding photos from the console.
+ *
+ * The same three-step upload the guest camera uses — reserve, PUT, record — with the
+ * host's own token, and the API answers by putting the photo straight in the album.
+ * A creator uploading the professional shot into their own wedding should not have to
+ * join the event as a guest, and should not have to develop a roll to see it.
+ */
+export function useHostUploadPhoto(eventId: string) {
+  const refresh = useRefreshEvent(eventId);
+  return useMutation({
+    mutationFn: (options: { file: File } & UploadPhotoOptions) =>
+      uploadPhoto(eventId, options.file, { ...options, scope: 'host' }),
+    onSuccess: (_data, variables) => {
+      void variables;
+      refresh();
+    },
   });
 }
 

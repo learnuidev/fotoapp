@@ -40,7 +40,7 @@ export default async function AwsPage() {
           <div className="mt-4 flex flex-col gap-2 text-sm text-muted-foreground">
             <p className="text-bad">{identity.error}</p>
             <p>Start the console with a profile that works:</p>
-            <pre className="rounded-2xl border border-border bg-black/40 p-4 font-mono text-[11px]">{`AWS_PROFILE=<your-profile> npm run console`}</pre>
+            <pre className="terminal rounded-2xl border p-4 font-mono text-[11px]">{`AWS_PROFILE=<your-profile> npm run console`}</pre>
           </div>
         ) : (
           <dl className="mt-4 grid gap-2 font-mono text-[11px] sm:grid-cols-2">
@@ -70,7 +70,7 @@ export default async function AwsPage() {
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col gap-0.5 rounded-xl bg-black/25 px-3 py-2">
+    <div className="flex flex-col gap-0.5 rounded-xl bg-muted px-3 py-2">
       <dt className="text-muted-foreground">{label}</dt>
       <dd className="break-all text-foreground/85">{value}</dd>
     </div>

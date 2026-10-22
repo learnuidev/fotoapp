@@ -159,7 +159,7 @@ export function CameraPanel({
           disabled={busy || outOfFilm}
           onClick={() => inputRef.current?.click()}
           className={cn(
-            'relative grid size-24 place-items-center rounded-full border-4 border-white/80 bg-white text-black shadow-2xl transition-transform',
+            'relative grid size-24 place-items-center rounded-full border-4 border-foreground/20 bg-foreground text-background shadow-2xl transition-transform',
             'hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-40',
           )}
           aria-label="Take a photo"
@@ -170,7 +170,7 @@ export function CameraPanel({
             <Camera className="size-8" strokeWidth={1.75} />
           )}
           {progress !== null && (
-            <span className="absolute inset-0 grid place-items-center rounded-full bg-black/60 text-xs font-medium text-white">
+            <span className="absolute inset-0 grid place-items-center rounded-full bg-background/80 text-xs font-medium text-foreground">
               {progress}%
             </span>
           )}
@@ -206,7 +206,7 @@ export function CameraPanel({
         <div className="rounded-3xl border border-border/70 bg-card/60 p-5">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 text-sm">
-              <Film className="size-4 text-violet-300" />
+              <Film className="size-4 text-violet-600 dark:text-violet-300" />
               <span className="font-medium">Roll in the camera</span>
             </div>
             <span className="text-xs text-muted-foreground">

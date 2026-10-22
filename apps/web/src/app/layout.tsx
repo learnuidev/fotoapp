@@ -9,7 +9,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0b0a09',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#fbf8f3' },
+    { media: '(prefers-color-scheme: dark)', color: '#0b0a09' },
+  ],
   width: 'device-width',
   initialScale: 1,
   // A gallery is a picture; letting a phone zoom into a caption is not the point.
@@ -26,7 +29,7 @@ export const viewport: Viewport = {
  */
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <body className="min-h-dvh">
         <AppProviders>{children}</AppProviders>
       </body>
