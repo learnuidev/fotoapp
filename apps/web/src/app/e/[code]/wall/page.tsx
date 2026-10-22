@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Heart, Pause, Play, ScanLine } from 'lucide-react';
 import { Badge, Button, Mark, cn, plural } from '@foto/ui';
@@ -24,25 +24,57 @@ import { QrCode } from '@/components/qr-code';
  * - **It has the code on it.** The wall is the best possible advert for the code —
  *   the people looking at it are the people who have not joined yet.
  */
-export default function WallPage({ params }: { params: { code: string } }) {
-  const code = params.code.toUpperCase();
-  const wall = useWall(code);
-  const [index, setIndex] = useState(0);
+/**
+ * The slideshow, tracked by *which photo is on screen* rather than by an index.
+ *
+ * That distinction is the whole point of it. The wall polls, and every poll can bring
+ * new photos at the front of a newest-first list — which shifts every index by one. An
+ * index-based wall therefore shows a *different* photo the moment somebody in the room
+ * takes one, silently, mid-caption. Following the photo's id instead means the frame
+ * being looked at stays put, and the arrivals are queued to come up next.
+ */
+function useWallSlideshow<T extends { photoId: string }>(photos: T[], intervalMs = 6000) {
+  const [currentId, setCurrentId] = useState<string | null>(null);
   const [paused, setPaused] = useState(false);
+  /** Ids that arrived since the last frame, newest first, waiting their turn. */
+  const arrivals = useRef<string[]>([]);
+  const seen = useRef(new Set<string>());
 
-  const photos = useMemo(() => wall.data?.photos ?? [], [wall.data]);
+  useEffect(() => {
+    const fresh = photos.map((photo) => photo.photoId).filter((id) => !seen.current.has(id));
+    for (const id of fresh) seen.current.add(id);
+    if (fresh.length > 0) arrivals.current.unshift(...fresh);
+
+    // First frame: the newest photo, or the newest arrival if the first poll was empty.
+    if (currentId === null && photos.length > 0) {
+      setCurrentId(arrivals.current[0] ?? photos[0]!.photoId);
+    }
+    // The photo on screen can vanish under us — hidden by the host, or deleted.
+    if (currentId !== null && !photos.some((photo) => photo.photoId === currentId)) {
+      setCurrentId(photos[0]?.photoId ?? null);
+    }
+  }, [photos, currentId]);
+
+  const step = useCallback(
+    (direction: 1 | -1) => {
+      if (photos.length === 0) return;
+      if (direction === 1 && arrivals.current.length > 0) {
+        // Something new came in while we were showing something older: show it now.
+        setCurrentId(arrivals.current.shift()!);
+        return;
+      }
+      const at = photos.findIndex((photo) => photo.photoId === currentId);
+      const next = at === -1 ? 0 : (at + direction + photos.length) % photos.length;
+      setCurrentId(photos[next]!.photoId);
+    },
+    [photos, currentId],
+  );
 
   useEffect(() => {
     if (paused || photos.length <= 1) return;
-    const timer = window.setInterval(() => {
-      setIndex((current) => (current + 1) % photos.length);
-    }, 6000);
+    const timer = window.setInterval(() => step(1), intervalMs);
     return () => window.clearInterval(timer);
-  }, [paused, photos.length]);
-
-  useEffect(() => {
-    if (index >= photos.length) setIndex(0);
-  }, [index, photos.length]);
+  }, [paused, step, photos.length, intervalMs]);
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -50,13 +82,31 @@ export default function WallPage({ params }: { params: { code: string } }) {
         event.preventDefault();
         setPaused((current) => !current);
       }
-      if (event.key === 'ArrowRight') setIndex((current) => (current + 1) % Math.max(1, photos.length));
-      if (event.key === 'ArrowLeft')
-        setIndex((current) => (current - 1 + photos.length) % Math.max(1, photos.length));
+      if (event.key === 'ArrowRight') step(1);
+      if (event.key === 'ArrowLeft') step(-1);
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [photos.length]);
+  }, [step]);
+
+  const index = photos.findIndex((photo) => photo.photoId === currentId);
+  return {
+    photo: (index === -1 ? photos[0] : photos[index]) as T | undefined,
+    index: index === -1 ? 0 : index,
+    paused,
+    setPaused,
+  };
+}
+
+export default function WallPage({ params }: { params: { code: string } }) {
+  const code = params.code.toUpperCase();
+  const wall = useWall(code);
+
+  const photos = useMemo(() => wall.data?.photos ?? [], [wall.data]);
+  // The event decides how long a frame is held; six seconds is only the fallback for a
+  // payload that predates the setting.
+  const seconds = wall.data?.event.settings.wallSeconds ?? 6;
+  const { photo, index, paused, setPaused } = useWallSlideshow(photos, seconds * 1000);
 
   if (wall.isLoading) {
     return (
@@ -70,10 +120,9 @@ export default function WallPage({ params }: { params: { code: string } }) {
     return (
       <div className="grid min-h-dvh place-items-center px-6 text-center">
         <div className="max-w-sm">
-          <h1 className="font-display text-3xl">There is no wall here</h1>
+          <h1 className="font-display text-3xl">This wall is not available</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            The host has either kept this album private or switched the wall off. Ask them for the
-            album link instead.
+            The host has kept this album private or turned the wall off.
           </p>
           <Button asChild variant="outline" className="mt-5">
             <Link href={`/e/${code}`}>Go to the album</Link>
@@ -84,7 +133,6 @@ export default function WallPage({ params }: { params: { code: string } }) {
   }
 
   const event = wall.data.event;
-  const photo = photos[index];
   const joinUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/j/${code}`;
 
   return (
@@ -99,13 +147,18 @@ export default function WallPage({ params }: { params: { code: string } }) {
               alt=""
               aria-hidden={candidateIndex !== index}
               className={cn(
-                'absolute inset-0 size-full object-contain transition-opacity duration-[1400ms] ease-out',
+                'absolute inset-0 size-full transition-opacity duration-[1400ms] ease-out',
+                // `cover` fills the screen and crops; `contain` keeps every pixel of the
+                // frame with bars around it. A wall behind a bar wants the first; a
+                // photograph somebody composed wants the second.
+                wall.data!.event.settings.wallFit === 'cover' ? 'object-cover' : 'object-contain',
                 candidateIndex === index ? 'opacity-100' : 'opacity-0',
               )}
             />
           ))}
 
           {/* --- what is under it ------------------------------------------ */}
+          {wall.data.event.settings.wallCaptions && (
           <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent px-8 pb-8 pt-24">
             <div className="mx-auto flex w-full max-w-5xl items-end justify-between gap-6">
               <div className="min-w-0">
@@ -136,15 +189,16 @@ export default function WallPage({ params }: { params: { code: string } }) {
               </div>
             </div>
           </div>
+          )}
         </div>
       ) : (
         <div className="grid flex-1 place-items-center px-6 text-center">
           <div>
-            <p className="font-display text-4xl text-white/90">The wall is waiting</p>
+            <p className="font-display text-4xl text-white/90">No photos yet</p>
             <p className="mt-3 text-sm text-white/60">
               {event.settings.cameraMode === 'roll'
-                ? 'This evening was shot on film. Nothing shows until the host develops the rolls.'
-                : 'The first photo anybody takes appears here within a few seconds.'}
+                ? 'This event uses film rolls. Photos appear once a roll is developed.'
+                : 'Photos appear here a few seconds after they are uploaded.'}
             </p>
           </div>
         </div>
@@ -165,9 +219,11 @@ export default function WallPage({ params }: { params: { code: string } }) {
 
         <div className="pointer-events-auto flex items-center gap-4">
           <div className="hidden items-center gap-2 rounded-2xl border border-white/15 bg-black/40 px-3 py-2 backdrop-blur-md sm:flex">
-            <QrCode value={joinUrl} size={54} className="rounded-lg" />
+            {/* Sized to be read from a sofa, not a desk: 72px of code is what a phone
+                across a room can still find, and the wall is black behind it. */}
+            <QrCode value={joinUrl} size={72} quiet={2} mark={false} className="rounded-2xl" />
             <div className="text-xs text-white/70">
-              <p className="font-medium text-white">Add yours</p>
+              <p className="font-medium text-white">Add photos</p>
               <p className="font-mono tracking-widest">{code}</p>
             </div>
           </div>
@@ -196,7 +252,7 @@ export default function WallPage({ params }: { params: { code: string } }) {
         <footer className="absolute inset-x-0 bottom-8 flex justify-center">
           <div className="flex items-center gap-2 rounded-full border border-white/15 bg-black/50 px-4 py-2 text-sm text-white/70 backdrop-blur-md">
             <ScanLine className="size-4" />
-            Scan the code, or open foto.app and type {code}
+            Scan the code or enter {code}
           </div>
         </footer>
       )}

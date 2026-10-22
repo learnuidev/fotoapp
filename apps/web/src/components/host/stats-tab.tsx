@@ -36,7 +36,7 @@ export function StatsTab({ event }: { event: Event }) {
 
       <Card>
         <CardContent className="flex flex-col gap-3 p-5">
-          <h3 className="text-sm font-medium">When they arrived</h3>
+          <h3 className="text-sm font-medium">Uploads by hour</h3>
           {data.uploadsByHour.length === 0 ? (
             <p className="text-xs text-muted-foreground">No photos yet.</p>
           ) : (
@@ -57,18 +57,18 @@ export function StatsTab({ event }: { event: Event }) {
       </Card>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Leaderboard title="Who shot the most" bars={data.topGuests} empty="Nobody has shot anything yet." />
+        <Leaderboard title="Top contributors" bars={data.topGuests} empty="No photos yet." />
         <Leaderboard
-          title="Which prompts worked"
+          title="Prompt performance"
           bars={data.topChallenges}
-          empty="No photo has been filed under a prompt."
+          empty="No photos filed under a prompt yet."
         />
       </div>
 
       {data.reactionBreakdown.length > 0 && (
         <Card>
           <CardContent className="flex flex-col gap-3 p-5">
-            <h3 className="text-sm font-medium">How the room reacted</h3>
+            <h3 className="text-sm font-medium">Reactions</h3>
             <div className="flex flex-wrap gap-3">
               {data.reactionBreakdown.map((bar) => (
                 <span key={bar.label} className="flex items-center gap-1.5 rounded-full bg-secondary/60 px-3 py-1.5 text-sm">

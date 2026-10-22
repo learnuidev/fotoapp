@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { EyeOff, Heart, Images, Inbox, Loader2 } from 'lucide-react';
+import { ArrowDownWideNarrow, EyeOff, Heart, Images, Inbox, Loader2 } from 'lucide-react';
 import type { Event } from '@foto/types';
 import { Card, CardContent, Skeleton, cn, plural } from '@foto/ui';
 import { useEventChallenges, useHostPhotos } from '@foto/api';
@@ -10,6 +10,9 @@ import { Gallery } from '@/components/gallery';
 import { DownloadAlbum } from '@/components/download-album';
 
 type Filter = 'all' | 'pending' | 'favorite' | 'hidden';
+
+/** Which date the grid is ordered by. */
+export type PhotoSort = 'uploaded' | 'captured';
 
 /**
  * The gallery, from the host's side.
@@ -25,9 +28,18 @@ type Filter = 'all' | 'pending' | 'favorite' | 'hidden';
  */
 export function GalleryTab({ event }: { event: Event }) {
   const [filter, setFilter] = useState<Filter>('all');
+  /**
+   * The order a host reads the gallery in.
+   *
+   * `uploaded` is newest-first, which is what a host watching an event wants; `captured`
+   * is by the shutter, earliest first, which is how the album is read later — and the
+   * only order in which a developed roll tells the evening in sequence.
+   */
+  const [sort, setSort] = useState<PhotoSort>('uploaded');
   const challenges = useEventChallenges(event.eventId);
   const photos = useHostPhotos(event.eventId, {
     limit: 200,
+    sort,
     status: filter === 'pending' ? 'pending' : filter === 'hidden' ? 'hidden' : undefined,
     favorite: filter === 'favorite' ? true : undefined,
   });
@@ -56,6 +68,37 @@ export function GalleryTab({ event }: { event: Event }) {
         </div>
 
         <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 rounded-full border border-border/60 bg-card/60 p-1 text-xs">
+            <span className="px-1.5 text-muted-foreground">
+              <ArrowDownWideNarrow className="size-3.5" />
+            </span>
+            <button
+              type="button"
+              onClick={() => setSort('uploaded')}
+              aria-pressed={sort === 'uploaded'}
+              className={cn(
+                'rounded-full px-2.5 py-1.5 transition-colors',
+                sort === 'uploaded'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:bg-accent',
+              )}
+            >
+              Newest upload
+            </button>
+            <button
+              type="button"
+              onClick={() => setSort('captured')}
+              aria-pressed={sort === 'captured'}
+              className={cn(
+                'rounded-full px-2.5 py-1.5 transition-colors',
+                sort === 'captured'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:bg-accent',
+              )}
+            >
+              Capture time
+            </button>
+          </div>
           {photos.isFetching && <Loader2 className="size-3.5 animate-spin text-muted-foreground" />}
           {event.closedAt === null && (
             <AddPhotos eventId={event.eventId} challenges={challenges.data} />
@@ -87,12 +130,12 @@ export function GalleryTab({ event }: { event: Event }) {
           }
           emptyBody={
             filter === 'pending'
-              ? 'Every photo has been dealt with. Approve-only mode means new ones show up here.'
+              ? 'Nothing is awaiting approval. New uploads appear here when approval is required.'
               : filter === 'favorite'
-                ? 'Tap a photo and press the star; those are the ones the wall plays first and the download keeps.'
+                ? 'Starred photos. The wall plays these first and the download keeps them.'
                 : filter === 'hidden'
-                  ? 'Nothing has been taken out of the gallery. A photo you hide leaves the album — and the wall — but stays here, with its reactions and comments, until you put it back.'
-                  : 'The album fills up as guests shoot — or add the first one yourself with “Add photos”. Share the code and watch the rest arrive.'
+                  ? 'No hidden photos. Hiding a photo removes it from the album and the wall, and keeps it here until you restore it.'
+                  : 'Upload with “Add photos”, or share the join code and let guests add theirs.'
           }
         />
       )}
@@ -101,8 +144,8 @@ export function GalleryTab({ event }: { event: Event }) {
         <Card>
           <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm">
             <span className="flex flex-wrap items-center gap-x-3 gap-y-1 text-muted-foreground">
-              {pending > 0 && <span>{plural(pending, 'photo')} waiting for your yes.</span>}
-              {hidden > 0 && <span>{plural(hidden, 'photo')} hidden from the gallery.</span>}
+              {pending > 0 && <span>{plural(pending, 'photo')} awaiting approval.</span>}
+              {hidden > 0 && <span>{plural(hidden, 'photo')} hidden.</span>}
             </span>
             <span className="flex items-center gap-4">
               {pending > 0 && filter !== 'pending' && (
@@ -111,7 +154,7 @@ export function GalleryTab({ event }: { event: Event }) {
                   className="text-primary underline-offset-4 hover:underline"
                   onClick={() => setFilter('pending')}
                 >
-                  Show what is waiting
+                  Review
                 </button>
               )}
               {hidden > 0 && filter !== 'hidden' && (
@@ -120,7 +163,7 @@ export function GalleryTab({ event }: { event: Event }) {
                   className="text-primary underline-offset-4 hover:underline"
                   onClick={() => setFilter('hidden')}
                 >
-                  Show hidden
+                  View hidden
                 </button>
               )}
             </span>

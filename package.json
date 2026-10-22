@@ -2,7 +2,7 @@
   "name": "foto",
   "version": "1.0.0",
   "private": true,
-  "description": "Foto \u2014 event photo sharing that combines the QR-code guest camera of Fotify, GuestPix and Kululu with the disposable film-roll camera of GuestCam: the app, the API it calls, the AWS stacks that deploy it, and the console that runs the two together.",
+  "description": "Foto \u2014 event photo sharing for one evening: a QR code on the table, a camera in every guest's hand, and an album that fills up live. The app, the API it calls, the AWS stacks that deploy it, and the console that runs the two together.",
   "workspaces": [
     "apps/*",
     "packages/*",

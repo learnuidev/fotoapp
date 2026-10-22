@@ -1,10 +1,10 @@
 /**
  * Prompts — the things a host asks the room to shoot.
  *
- * The idea is Kululu's and it is the cheapest good idea in this product: a person
- * handed a camera and no instructions takes a photo of the table. A person asked
- * for "the shoes" takes a photo somebody wants to look at, and the host's
- * analytics can then say which prompt produced the evening.
+ * It is the cheapest good idea in this product: a person handed a camera and no
+ * instructions takes a photo of the table. A person asked for "the shoes" takes a
+ * photo somebody wants to look at, and the host's analytics can then say which prompt
+ * produced the evening.
  */
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { ulid } from 'ulid';

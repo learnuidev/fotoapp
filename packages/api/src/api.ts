@@ -98,6 +98,8 @@ function endpoints(scope: 'host' | 'guest') {
         challengeId?: string;
         rollId?: string;
         favorite?: boolean;
+        /** `uploaded` (newest first) or `captured` (by the shutter, earliest first). */
+        sort?: 'uploaded' | 'captured';
       } = {},
     ) => {
       const query = new URLSearchParams();
@@ -108,6 +110,7 @@ function endpoints(scope: 'host' | 'guest') {
       if (filters.challengeId) query.set('challengeId', filters.challengeId);
       if (filters.rollId) query.set('rollId', filters.rollId);
       if (filters.favorite) query.set('favorite', '1');
+      if (filters.sort) query.set('sort', filters.sort);
       const suffix = query.toString();
       // The console reads its own copy of this route, behind the authorizer: the public
       // one cannot see a host's token, and would answer with the gallery minus the

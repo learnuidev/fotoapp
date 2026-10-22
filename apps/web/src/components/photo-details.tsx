@@ -87,7 +87,7 @@ export function PhotoDetails({ photo, defaultOpen = false }: { photo: Photo; def
     >
       <summary className="flex cursor-pointer list-none items-center gap-2 text-xs text-muted-foreground marker:hidden">
         <span className="transition-transform group-open:rotate-90">▸</span>
-        Capture details
+        Photo details
         {meta?.cameraModel && <span className="text-muted-foreground/70">· {meta.cameraModel}</span>}
         {!hasExif && <span className="text-muted-foreground/60">· none in the file</span>}
       </summary>

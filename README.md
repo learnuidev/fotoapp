@@ -1,17 +1,7 @@
 # foto
 
-Event photo sharing, assembled from the four ideas that each got one thing right:
-
-| from | the idea |
-| --- | --- |
-| [Fotify](https://fotify.app/) · [GuestPix](https://guestpix.com/) | a QR code on the table, and guests upload without installing anything |
-| [Kululu](https://www.kululu.com/) | a live wall that fills up while the party happens, and prompts that give a room something to shoot |
-| [GuestCam](https://guestcam.co/) | the disposable camera: twelve shots, no previews, developed later |
-
-What this repository adds to that list is the part all four make you pay for: one
-code per evening, one album, a host who can moderate it, prompts that report what
-they produced, film rolls that develop on the host's word, a projector screen that
-needs no sign-in, and the whole album as a zip the next morning.
+Event photo sharing: a join code, a shared album that guests fill from their own
+cameras, and a live wall — or film rolls that stay hidden until the host develops them.
 
 ---
 
@@ -45,8 +35,18 @@ rewords every photo filed under it, because a photo's prompt is a reference rath
 a copy.
 
 **The wall** is `/e/<code>/wall`: a projector screen with no sign-in, polling every
-five seconds, cycling through the evening with the guest's name and the caption under
-each frame. Space pauses it. It is black on purpose and does not follow the theme.
+five seconds, one photo at a time with the guest's name and the caption under each
+frame. Space pauses it, the arrows step it by hand, and it is black on purpose — a
+projector is a projector. It follows the photo rather than a position in the list, so a
+poll that brings new photos does not change what the room is looking at; arrivals are
+queued to come up next.
+
+Its four dials live in the event's settings, because a wedding, a film reveal and a
+conference want three different walls: **which order** it plays (`newest` — live, and
+backwards from what was just shot — or `chronological` by the shutter, so a developed
+film roll replays the evening from its first frame), **how long** each photo is held
+(2–60 s), **how it fits** the screen (`contain` keeps every pixel, `cover` fills the
+screen and crops), and whether the **names and captions** are drawn under the frame.
 
 ---
 
@@ -61,8 +61,9 @@ sketched against:
 - **TanStack Query** for every read and write — a mutation owns its invalidation.
 - **AWS**: API Gateway (HTTP API) + **Lambda** + **DynamoDB** + **S3** +
   **CloudFront** + **Cognito**, deployed by **CDK** (`infra/`).
-- `fflate` builds the zip **in the browser**, `qrcode` draws the card in the browser,
-  and nothing else is a dependency of the product.
+- `fflate` builds the zip **in the browser**, `react-qr-code` draws the join code as
+  SVG (sharp at projector size, with the mark in the middle at error-correction level
+  `H` so it still scans), and nothing else is a dependency of the product.
 
 ```
 apps/console        the control room — deploy a stage, start the app against one

@@ -61,12 +61,12 @@ export function SignInScreen({
       <div className="flex flex-col items-start gap-2">
         <Mark />
         <h1 className="font-display text-3xl tracking-tight">
-          {mode === 'sign-in' ? 'Sign in to run an event' : 'Make a host account'}
+          {mode === 'sign-in' ? 'Sign in' : 'Create a host account'}
         </h1>
         <p className="text-sm text-muted-foreground">
           {mode === 'sign-in'
-            ? 'Your events, their photos, and the wall on the projector.'
-            : 'One account, however many evenings you photograph.'}
+            ? 'Manage your events, photos and walls.'
+            : 'Required for hosting. Guests do not need an account.'}
         </p>
       </div>
 
@@ -119,7 +119,7 @@ export function SignInScreen({
 
         <Button type="submit" size="lg" disabled={busy} className="mt-1">
           {busy && <Loader2 className="animate-spin" />}
-          {mode === 'sign-in' ? 'Sign in' : 'Make the account'}
+          {mode === 'sign-in' ? 'Sign in' : 'Create account'}
         </Button>
       </form>
 
@@ -132,10 +132,10 @@ export function SignInScreen({
             setError(null);
           }}
         >
-          {mode === 'sign-in' ? 'No account yet? Make one.' : 'Already host of something? Sign in.'}
+          {mode === 'sign-in' ? 'Create an account' : 'Sign in instead'}
         </button>
         <Link href="/" className="underline-offset-4 hover:text-foreground hover:underline">
-          Back to the front page
+          Back to home
         </Link>
         {footer}
       </div>

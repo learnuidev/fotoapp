@@ -25,16 +25,14 @@ export function GuestsTab({ event }: { event: Event }) {
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          {plural(guests.length, 'person', 'people')} have joined
-          {event.settings.cameraMode === 'roll' ? ' with a roll in hand' : ''}.
+          {plural(guests.length, 'guest')} joined.
         </p>
       </div>
 
       {guests.length === 0 ? (
         <Card>
           <CardContent className="p-8 text-center text-sm text-muted-foreground">
-            Nobody has joined yet. The guest link is on the share tab, and the QR on the card is the
-            same thing.
+            No guests yet. Share the link or QR code from the Share tab.
           </CardContent>
         </Card>
       ) : (
@@ -63,7 +61,7 @@ export function GuestsTab({ event }: { event: Event }) {
                     aria-label={`Remove ${guest.name}`}
                     onClick={() =>
                       removeGuest.mutate(guest.guestId, {
-                        onSuccess: () => toast('Taken off the roster', { description: 'Their photos stay.' }),
+                        onSuccess: () => toast('Guest removed', { description: 'Their photos are kept.' }),
                       })
                     }
                   >

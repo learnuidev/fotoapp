@@ -173,7 +173,7 @@ function ViewerBody({
         </button>
         {photo.rollId && (
           <div className="absolute left-3 top-3 rounded-full bg-black/60 px-2.5 py-0.5 text-[11px] font-medium text-white/90 backdrop-blur-sm">
-            from a roll
+            film roll
           </div>
         )}
       </div>
@@ -222,7 +222,7 @@ function ViewerBody({
                   disabled={busy || photo.status !== 'visible'}
                   onClick={() =>
                     setCover.mutate(photo.photoId, {
-                      onSuccess: () => toast.success('That is the album cover now'),
+                      onSuccess: () => toast.success('Album cover updated'),
                     })
                   }
                 >
@@ -271,7 +271,7 @@ function ViewerBody({
 
         {isHost && photo.status === 'pending' && (
           <div className="flex items-center justify-between gap-3 rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3">
-            <p className="text-sm text-amber-800 dark:text-amber-200">Waiting for you. Nobody else can see this yet.</p>
+            <p className="text-sm text-amber-800 dark:text-amber-200">Awaiting your approval. Not visible to guests.</p>
             <Button
               size="sm"
               disabled={busy}
@@ -335,7 +335,7 @@ function ViewerBody({
             <div className="flex flex-col gap-3">
               <span className="text-xs uppercase tracking-wider text-muted-foreground">
                 {photo.commentCount === 0
-                  ? 'No comments yet'
+                  ? 'No comments'
                   : `${photo.commentCount} comment${photo.commentCount === 1 ? '' : 's'}`}
               </span>
 
@@ -415,7 +415,7 @@ function ViewerBody({
                 });
               }}
             >
-              <Trash2 /> Delete this photo
+              <Trash2 /> Delete photo
             </Button>
           </>
         )}

@@ -273,6 +273,15 @@ async function listPhotos(event: APIGatewayProxyEvent): Promise<APIGatewayProxyR
   const store = getStore();
   const limit = Math.min(MAX_PAGE_SIZE, Math.max(1, queryNumber(event, 'limit', DEFAULT_PAGE_SIZE)));
   const before = queryNumber(event, 'before', Number.POSITIVE_INFINITY);
+  /**
+   * Which date the gallery is ordered by.
+   *
+   * `uploaded` is the live order: newest first, which is what a host watching an event
+   * wants. `captured` is by the shutter — EXIF's own `DateTimeOriginal` when the file has
+   * one, the client's timestamp otherwise — earliest first, which is how an album is read
+   * afterwards and how a developed film roll replays.
+   */
+  const sort = query(event, 'sort') === 'captured' ? 'captured' : 'uploaded';
   const statusFilter = query(event, 'status');
   const guestFilter = query(event, 'guestId');
   const challengeFilter = query(event, 'challengeId');
@@ -292,12 +301,19 @@ async function listPhotos(event: APIGatewayProxyEvent): Promise<APIGatewayProxyR
     return true;
   });
 
-  const page = filtered.sort((a, b) => b.createdAt - a.createdAt).slice(0, limit);
+  const takenAt = (photo: PhotoRow) => photo.metadata?.takenAt ?? photo.takenAt;
+  const page = filtered
+    .sort((a, b) =>
+      sort === 'captured' ? takenAt(a) - takenAt(b) : b.createdAt - a.createdAt,
+    )
+    .slice(0, limit);
   const ctx = await photoContext(row.eventId, { guestId });
 
   return ok({
     photos: page.map((photo) => toPhoto(photo, ctx)),
-    nextBefore: page.length === limit ? page[page.length - 1]!.createdAt : null,
+    // Paging is a position in the upload order; the capture order is read in one go.
+    nextBefore:
+      sort === 'uploaded' && page.length === limit ? page[page.length - 1]!.createdAt : null,
     counts: await countsFor(row.eventId),
     // The host console's moderation chips need to know how much is waiting and how
     // much is hidden without a second request; guests are simply told zero.

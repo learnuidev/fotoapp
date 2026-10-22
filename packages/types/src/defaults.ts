@@ -23,16 +23,37 @@ export const DEFAULT_EVENT_SETTINGS: EventSettings = {
   allowDownloads: true,
   challengesEnabled: true,
   slideshowEnabled: true,
+  wallOrder: 'newest',
+  wallSeconds: 6,
+  wallFit: 'contain',
+  wallCaptions: true,
 };
+
+/** The dwell times the wall's settings form offers, in seconds. */
+export const WALL_SECONDS = [3, 5, 8, 12, 20] as const;
+
+/** How a wall can order an evening, with the sentence the settings form shows for each. */
+export const WALL_ORDER_OPTIONS: { value: string; label: string; hint: string }[] = [
+  {
+    value: 'newest',
+    label: 'Newest first',
+    hint: 'Live: starts on the most recent photo and works backwards.',
+  },
+  {
+    value: 'chronological',
+    label: 'In the order they were taken',
+    hint: 'Plays from the first photo forwards, by capture time.',
+  },
+];
 
 /** The shots-per-roll choices the settings form offers. */
 export const ROLL_SIZES = [12, 24, 36] as const;
 
 /** How a roll can reveal, with the sentence the settings form shows for each. */
 export const ROLL_REVEAL_OPTIONS: { value: RollReveal; label: string; hint: string }[] = [
-  { value: 'shots', label: 'When the roll is finished', hint: 'The last shot develops it for everyone.' },
-  { value: 'timer', label: 'After a delay', hint: 'It develops by itself, however many shots are left.' },
-  { value: 'host', label: 'When the host develops it', hint: 'You press develop, and the rolls come back.' },
+  { value: 'shots', label: 'When the roll is full', hint: 'The final photo develops the roll.' },
+  { value: 'timer', label: 'After a delay', hint: 'Rolls develop automatically.' },
+  { value: 'host', label: 'When the host develops it', hint: 'Rolls develop when you press develop.' },
 ];
 
 /** What kind of gathering, and the prompts a new event of that kind starts with. */
@@ -46,31 +67,31 @@ export const EVENT_KINDS: {
     value: 'wedding',
     label: 'Wedding',
     emoji: '💍',
-    prompts: ['The first dance', 'Your table, mid-laugh', 'The shoes', 'Somebody crying (kindly)'],
+    prompts: ['The first dance', 'The tables', 'The shoes', 'The speeches'],
   },
   {
     value: 'party',
     label: 'Party',
     emoji: '🎉',
-    prompts: ['The best-dressed guest', 'Caught mid-move on the dance floor', 'The last three people standing'],
+    prompts: ['Best dressed', 'The dance floor', 'The last guests standing'],
   },
   {
     value: 'trip',
     label: 'Trip',
     emoji: '🧭',
-    prompts: ['The view nobody expected', 'Breakfast', 'The worst navigator'],
+    prompts: ['The view', 'Breakfast', 'Getting there'],
   },
   {
     value: 'work',
-    label: 'Work thing',
+    label: 'Work event',
     emoji: '💼',
-    prompts: ['The whiteboard that made sense at the time', 'Somebody’s fifth coffee', 'The team, all of it'],
+    prompts: ['The whiteboard', 'Coffee', 'The team'],
   },
   {
     value: 'other',
-    label: 'Something else',
+    label: 'Other',
     emoji: '📸',
-    prompts: ['The shot nobody else would take'],
+    prompts: ['Highlights'],
   },
 ];
 

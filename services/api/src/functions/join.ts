@@ -22,7 +22,16 @@ import {
   pathParam,
   queryNumber,
 } from '../lib/http';
-import { photoContext, toChallenge, toGuest, toPhoto, toPublicEvent, toRoll, type Viewer } from '../lib/serialize';
+import {
+  photoContext,
+  settingsOf,
+  toChallenge,
+  toGuest,
+  toPhoto,
+  toPublicEvent,
+  toRoll,
+  type Viewer,
+} from '../lib/serialize';
 import { developDueRolls, openRollOf } from '../lib/rolls';
 import { getStore } from '../lib/store';
 import { issueGuestToken } from '../lib/guest-tokens';
@@ -195,8 +204,7 @@ async function updateMyGuest(event: APIGatewayProxyEvent): Promise<APIGatewayPro
  */
 async function publicPhotos(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   const row = await eventByJoinCode(pathParam(event, 'code'));
-  const settings = row.settings as { galleryVisibility?: string };
-  if (settings.galleryVisibility !== 'everyone') {
+  if (settingsOf(row).galleryVisibility !== 'everyone') {
     throw new HttpError(403, 'This album is not public');
   }
 
@@ -232,8 +240,10 @@ async function publicPhotos(event: APIGatewayProxyEvent): Promise<APIGatewayProx
  */
 async function wall(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   const row = await eventByJoinCode(pathParam(event, 'code'));
-  const settings = row.settings as { galleryVisibility?: string; slideshowEnabled?: boolean };
-  if (settings.galleryVisibility !== 'everyone' || settings.slideshowEnabled === false) {
+  // Read through the same defaults-and-validation the rest of the API uses, so a wall
+  // setting an old row never wrote still has a sensible value here.
+  const settings = settingsOf(row);
+  if (settings.galleryVisibility !== 'everyone' || !settings.slideshowEnabled) {
     throw new HttpError(403, 'This event has no public wall');
   }
 
@@ -245,9 +255,22 @@ async function wall(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult>
     store.query(challenges, 'eventId', row.eventId),
   ]);
 
+  /**
+   * The queue, in the order the wall was asked to play it.
+   *
+   * `newest` is by upload time, so the wall starts on what the room just shot.
+   * `chronological` is by the shutter — EXIF's own `DateTimeOriginal` when the file
+   * carried one, the upload time otherwise — so a developed film reveal replays the
+   * evening from its first frame.
+   */
+  const chronological = settings.wallOrder === 'chronological';
   const visible = photoRows
     .filter((photo) => photo.status === 'visible')
-    .sort((a, b) => b.createdAt - a.createdAt)
+    .sort((a, b) =>
+      chronological
+        ? (a.metadata?.takenAt ?? a.takenAt) - (b.metadata?.takenAt ?? b.takenAt)
+        : b.createdAt - a.createdAt,
+    )
     .slice(0, 120);
 
   const challengeCounts = new Map<string, number>();

@@ -1,8 +1,7 @@
 /**
  * A roll — the disposable camera.
  *
- * This is the idea taken from GuestCam and folded into everything the other
- * three apps do. A guest is handed a film roll with a fixed number of shots.
+ * A guest is handed a film roll with a fixed number of shots.
  * Nothing on it can be seen until it is developed: not by the other guests, not
  * by the host, and notably not by the person who shot it. What that buys is a
  * different kind of photo — nobody is performing for a gallery that updates

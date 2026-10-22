@@ -41,7 +41,7 @@ export function PromptPicker({
       await update.mutateAsync({ photoId: photo.photoId, payload: { challengeId } });
       onChanged?.();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Could not file that photo');
+      toast.error(error instanceof Error ? error.message : 'Could not update the prompt');
     } finally {
       setSaving(null);
     }
@@ -50,7 +50,7 @@ export function PromptPicker({
   return (
     <div className="flex flex-col gap-1.5">
       <span className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground">
-        <Sparkles className="size-3.5" /> Filed under
+        <Sparkles className="size-3.5" /> Prompt
       </span>
       {/*
         Every prompt, active or paused. Paused only means "the guest camera is not
@@ -89,7 +89,7 @@ export function PromptPicker({
           disabled={saving !== null}
           className="w-fit text-xs text-muted-foreground underline-offset-4 hover:underline disabled:opacity-60"
         >
-          {saving === 'none' ? 'Taking it out…' : 'Take it out of this prompt'}
+          {saving === 'none' ? 'Removing…' : 'Remove from prompt'}
         </button>
       )}
     </div>

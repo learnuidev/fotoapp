@@ -52,8 +52,7 @@ export function JoinForm({
       <Card className="bg-card/70">
         <CardContent className="flex flex-col gap-5 p-6">
           <p className="text-sm text-muted-foreground">
-            {event.welcome ||
-              'Add the photos you take tonight to everyone else’s. No app to install, no account to make.'}
+            {event.welcome || 'Join this album to add your photos. No app and no account required.'}
           </p>
 
           <form
@@ -119,8 +118,8 @@ export function JoinForm({
             <Sparkles className="mt-0.5 size-3.5 shrink-0 text-primary" />
             <span>
               {event.settings.cameraMode === 'roll'
-                ? `${event.settings.shotsPerRoll} shots on a roll, and nothing develops until later. Shoot like nobody is watching.`
-                : 'Anything you shoot goes straight into the album, with your name under it.'}
+                ? `${event.settings.shotsPerRoll} shots per roll. Photos stay hidden until the roll is developed.`
+                : 'Photos go straight into the album, with your name on them.'}
             </span>
           </div>
         </CardContent>

@@ -83,6 +83,9 @@ function publicSettings(settings: EventSettings): PublicEventSettings {
     challengesEnabled: settings.challengesEnabled,
     slideshowEnabled: settings.slideshowEnabled,
     photoApproval: settings.photoApproval,
+    wallSeconds: settings.wallSeconds,
+    wallFit: settings.wallFit,
+    wallCaptions: settings.wallCaptions,
   };
 }
 

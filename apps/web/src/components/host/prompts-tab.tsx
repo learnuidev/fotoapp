@@ -53,11 +53,10 @@ export function PromptsTab({ event }: { event: Event }) {
         <CardContent className="flex flex-col gap-3 p-5">
           <div className="flex items-center gap-2 text-sm">
             <Sparkles className="size-4 text-primary" />
-            <span className="font-medium">Ask the room for something specific</span>
+            <span className="font-medium">Add a prompt</span>
           </div>
           <p className="text-xs text-muted-foreground">
-            Guests pick a prompt on the camera screen and their photo is filed under it. The counts
-            below are what each prompt actually produced.
+            Guests can pick a prompt when uploading. The count shows how many photos each prompt has.
           </p>
 
           <form
@@ -141,7 +140,7 @@ export function PromptsTab({ event }: { event: Event }) {
                       onSuccess: () => {
                         setEditing(null);
                         toast.success('Prompt renamed', {
-                          description: 'Every photo filed under it says so now.',
+                          description: 'Photos filed under it are updated.',
                         });
                       },
                       onError: (error) =>
@@ -207,7 +206,7 @@ export function PromptsTab({ event }: { event: Event }) {
                     rename
                   </p>
                 </div>
-                {challenge.photoCount >= 5 && <Badge variant="default">popular</Badge>}
+                {challenge.photoCount >= 5 && <Badge variant="default">most used</Badge>}
                 <Button
                   variant="ghost"
                   size="icon-sm"
@@ -241,7 +240,7 @@ export function PromptsTab({ event }: { event: Event }) {
                   onClick={(clickEvent) => {
                     clickEvent.stopPropagation();
                     deleteChallenge.mutate(challenge.challengeId, {
-                      onSuccess: () => toast('Prompt removed', { description: 'Its photos stay.' }),
+                      onSuccess: () => toast('Prompt removed', { description: 'Its photos are kept.' }),
                     });
                   }}
                 >

@@ -76,15 +76,15 @@ export function CameraPanel({
         uploaded += 1;
 
         if (result.roll && result.roll.status === 'developed') {
-          toast.success('That was the last shot — the roll just developed', {
-            description: 'Everybody can see it now.',
+          toast.success('Roll complete and developed', {
+            description: 'Its photos are now in the album.',
           });
         } else if (result.roll) {
-          toast.success(`Shot ${result.roll.shotCount} of ${result.roll.shotLimit}`, {
-            description: 'Nothing to see until the roll develops.',
+          toast.success(`Photo ${result.roll.shotCount} of ${result.roll.shotLimit}`, {
+            description: 'Hidden until the roll is developed.',
           });
         } else if (settings.photoApproval) {
-          toast.success('Sent — the host will let it into the album');
+          toast.success('Sent for host approval');
         } else {
           toast.success('In the album');
         }
@@ -117,7 +117,7 @@ export function CameraPanel({
       {settings.challengesEnabled && challenges.length > 0 && (
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground">
-            <Sparkles className="size-3.5" /> Tonight’s prompts
+            <Sparkles className="size-3.5" /> Prompts
           </div>
           <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
             {challenges.map((challenge) => (
@@ -178,19 +178,19 @@ export function CameraPanel({
 
         <p className="text-center text-sm text-muted-foreground">
           {outOfFilm
-            ? 'That roll is finished — develop it to see what you got.'
+            ? 'This roll is full. Develop it to see the photos.'
             : onRoll
               ? shotsLeft !== null
                 ? `${shotsLeft} shot${shotsLeft === 1 ? '' : 's'} left on this roll`
                 : `${settings.shotsPerRoll} shots a roll`
               : settings.photoApproval
-                ? 'The host sees it before anybody else does'
-                : 'Shoot anything — it lands in the album as you take it'}
+                ? 'The host reviews photos before they appear'
+                : 'Photos appear in the album as you add them'}
         </p>
 
         {activePrompt && (
           <Badge variant="secondary">
-            {activePrompt.emoji} shooting “{activePrompt.title}”
+            {activePrompt.emoji} “{activePrompt.title}”
           </Badge>
         )}
 
@@ -235,7 +235,7 @@ export function CameraPanel({
                 ? roll.developAt
                   ? `Develops ${relativeTime(roll.developAt)}.`
                   : 'Develops in the morning.'
-                : 'Develops by itself when the roll is full.'}
+                : 'Develops automatically when the roll is full.'}
           </p>
 
           <Button
@@ -247,7 +247,7 @@ export function CameraPanel({
               developRoll.mutate(roll.rollId, {
                 onSuccess: () => {
                   toast.success('Roll developed', {
-                    description: 'Whatever you shot is in the album now.',
+                    description: 'Its photos are now in the album.',
                   });
                   onShot?.();
                 },
@@ -264,8 +264,8 @@ export function CameraPanel({
       {onRoll && !roll && !busy && (
         <div className="rounded-3xl border border-dashed border-border/70 bg-card/40 p-5 text-center">
           <p className="text-sm text-muted-foreground">
-            {settings.shotsPerRoll} shots to a roll. Nothing on it is visible — not even to you —
-            until it is developed.
+            {settings.shotsPerRoll} shots per roll. Photos are hidden, including from you, until
+            the roll is developed.
           </p>
           <Button
             variant="outline"

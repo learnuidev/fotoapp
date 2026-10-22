@@ -44,7 +44,7 @@ export function DownloadAlbum({
 
   async function run() {
     if (queued.length === 0) {
-      toast('Nothing to download yet');
+      toast('No photos to download');
       return;
     }
 

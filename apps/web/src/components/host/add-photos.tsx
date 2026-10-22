@@ -69,7 +69,7 @@ export function AddPhotos({ eventId, challenges = [] }: { eventId: string; chall
     if (input.current) input.current.value = '';
     if (added > 0) {
       toast.success(`Added ${added} photo${added === 1 ? '' : 's'}`, {
-        description: 'They are in the album, credited to you.',
+        description: 'They are now in the album.',
       });
     }
   }

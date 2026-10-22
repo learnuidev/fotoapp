@@ -36,14 +36,14 @@ export function RollsTab({ event }: { event: Event }) {
             <div>
               <p className="font-medium">
                 {shooting.length === 0
-                  ? 'Every roll is back'
-                  : `${shooting.length} roll${shooting.length === 1 ? '' : 's'} still in a camera`}
+                  ? 'All rolls developed'
+                  : `${shooting.length} roll${shooting.length === 1 ? '' : 's'} in progress`}
               </p>
               <p className="mt-0.5 max-w-md text-xs text-muted-foreground">
                 {event.settings.rollReveal === 'host'
-                  ? 'This event reveals by hand: nothing on a roll is visible until you develop it.'
+                  ? 'Photos stay hidden until you develop each roll.'
                   : event.settings.rollReveal === 'timer'
-                    ? `Rolls develop themselves after ${event.settings.rollRevealMinutes} minutes.`
+                    ? `Rolls develop automatically after ${event.settings.rollRevealMinutes} minutes.`
                     : 'Rolls develop when they are full.'}
               </p>
             </div>
@@ -63,7 +63,7 @@ export function RollsTab({ event }: { event: Event }) {
                       description:
                         result.developed === 0
                           ? undefined
-                          : 'Whatever was on them is in the album now.',
+                          : 'Their photos are now in the album.',
                     },
                   );
                   void rolls.refetch();
@@ -82,7 +82,7 @@ export function RollsTab({ event }: { event: Event }) {
       {list.length === 0 && !rolls.isLoading && (
         <Card>
           <CardContent className="p-8 text-center text-sm text-muted-foreground">
-            No guest has loaded a roll yet. The camera tab on a guest’s phone does that.
+            No rolls yet. Guests load a roll from the camera tab.
           </CardContent>
         </Card>
       )}
@@ -102,7 +102,7 @@ export function RollsTab({ event }: { event: Event }) {
               </div>
               <div className="flex items-center gap-2">
                 {roll.status === 'shooting' ? (
-                  <Badge variant="film">in the camera</Badge>
+                  <Badge variant="film">in progress</Badge>
                 ) : (
                   <Badge variant="secondary">developed</Badge>
                 )}
@@ -139,8 +139,8 @@ export function RollsTab({ event }: { event: Event }) {
               />
             ) : (
               <p className="text-xs text-muted-foreground">
-                {roll.shotCount} frame{roll.shotCount === 1 ? '' : 's'} on it, and no way to see any
-                of them until it develops.
+                {roll.shotCount} photo{roll.shotCount === 1 ? '' : 's'} on this roll, hidden until
+                it develops.
               </p>
             )}
           </CardContent>

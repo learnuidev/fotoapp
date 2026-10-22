@@ -3,9 +3,9 @@ import './globals.css';
 import { AppProviders } from '@foto/auth';
 
 export const metadata: Metadata = {
-  title: 'foto — the camera roll of the evening',
+  title: 'foto — event photo sharing',
   description:
-    'Scan the code, shoot the evening, and watch it arrive on the wall. Film rolls that develop at midnight, no app to install, no account for guests.',
+    'Guests join with a code, upload to one shared album, and follow it on a live wall. No app or account required for guests.',
 };
 
 export const viewport: Viewport = {

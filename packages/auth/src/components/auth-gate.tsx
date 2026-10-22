@@ -31,16 +31,15 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
       <div className="mx-auto flex w-full max-w-md flex-col px-5 py-20">
         <Card>
           <CardContent className="flex flex-col gap-4 p-6">
-            <h1 className="font-display text-2xl">Sign in to see your events</h1>
+            <h1 className="font-display text-2xl">Sign in to view your events</h1>
             <p className="text-sm text-muted-foreground">
-              The console is where an event is made, watched and moderated. The photos themselves
-              live behind the join code, and nobody needs an account to shoot them.
+              The console is where events are created and moderated. Guests do not need an account.
             </p>
             <Button asChild size="lg">
               <Link href="/sign-in">Sign in</Link>
             </Button>
             <Button asChild variant="ghost">
-              <Link href="/sign-up">Make a host account</Link>
+              <Link href="/sign-up">Create a host account</Link>
             </Button>
           </CardContent>
         </Card>

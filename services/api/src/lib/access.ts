@@ -77,6 +77,17 @@ export function mergeSettings(
   if (patch.rollReveal && ['shots', 'host', 'timer'].includes(patch.rollReveal)) {
     next.rollReveal = patch.rollReveal;
   }
+  if (patch.wallOrder && ['newest', 'chronological'].includes(patch.wallOrder)) {
+    next.wallOrder = patch.wallOrder;
+  }
+  if (patch.wallFit && ['contain', 'cover'].includes(patch.wallFit)) {
+    next.wallFit = patch.wallFit;
+  }
+  if (typeof patch.wallSeconds === 'number') {
+    // A wall that changes every second is a strobe; two minutes is a slideshow nobody
+    // is watching any more. The floor and ceiling are the product's, not a preference.
+    next.wallSeconds = Math.min(60, Math.max(2, Math.round(patch.wallSeconds)));
+  }
   if (typeof patch.shotsPerRoll === 'number') {
     next.shotsPerRoll = Math.min(48, Math.max(1, Math.round(patch.shotsPerRoll)));
   }
@@ -90,6 +101,7 @@ export function mergeSettings(
     'allowDownloads',
     'challengesEnabled',
     'slideshowEnabled',
+    'wallCaptions',
   ];
   for (const flag of flags) {
     const value = patch[flag];

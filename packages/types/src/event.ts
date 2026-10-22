@@ -28,9 +28,9 @@ export type GalleryVisibility = 'everyone' | 'guests' | 'host';
  *
  * - `open` — the modern thing these apps all do: shoot, see it in the gallery
  *   immediately, shoot again.
- * - `roll` — GuestCam's idea: a guest is handed a roll of film with a fixed
- *   number of shots, cannot see anybody's photos (including their own) until the
- *   roll is developed, and the reveal is the event's second act.
+ * - `roll` — a guest is handed a roll of film with a fixed number of shots, cannot
+ *   see anybody's photos (including their own) until the roll is developed, and the
+ *   reveal is the event's second act.
  */
 export type CameraMode = 'open' | 'roll';
 
@@ -59,7 +59,26 @@ export interface EventSettings {
   allowDownloads: boolean;
   challengesEnabled: boolean;
   slideshowEnabled: boolean;
+
+  /**
+   * How the wall plays the album.
+   *
+   * `newest` is the live one — it starts at the latest arrival and works backwards, so
+   * what the room just shot is what the room is looking at. `chronological` plays from
+   * the first frame of the evening forward, which is what a film event's reveal wants:
+   * the rolls come back and the night replays in order.
+   */
+  wallOrder: WallOrder;
+  /** Seconds each photo is held. The room needs time to laugh at it. */
+  wallSeconds: number;
+  /** `contain` keeps the whole frame (with black bars); `cover` fills the screen and crops. */
+  wallFit: 'contain' | 'cover';
+  /** Whether the guest's name and caption are drawn under the frame. */
+  wallCaptions: boolean;
 }
+
+/** The order a wall plays an evening in. */
+export type WallOrder = 'newest' | 'chronological';
 
 /** The event as its host sees it: every setting, plus the counts a console shows. */
 export interface Event {
@@ -134,6 +153,9 @@ export interface PublicEventSettings {
   challengesEnabled: boolean;
   slideshowEnabled: boolean;
   photoApproval: boolean;
+  wallSeconds: number;
+  wallFit: 'contain' | 'cover';
+  wallCaptions: boolean;
 }
 
 /** One card in a console's analytics — an hour of uploads, a top guest, a prompt. */

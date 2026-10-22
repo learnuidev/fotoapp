@@ -20,6 +20,7 @@ export interface PhotoFilters {
   rollId?: string;
   favorite?: boolean;
   limit?: number;
+  sort?: 'uploaded' | 'captured';
 }
 
 export function useHostPhotos(eventId: string | undefined, filters: PhotoFilters = {}) {

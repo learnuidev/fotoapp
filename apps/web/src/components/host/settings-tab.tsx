@@ -3,7 +3,14 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2, Trash2 } from 'lucide-react';
-import { ROLL_REVEAL_OPTIONS, ROLL_SIZES, type Event, type EventSettings } from '@foto/types';
+import {
+  ROLL_REVEAL_OPTIONS,
+  ROLL_SIZES,
+  WALL_ORDER_OPTIONS,
+  WALL_SECONDS,
+  type Event,
+  type EventSettings,
+} from '@foto/types';
 import {
   Button,
   Card,
@@ -122,13 +129,13 @@ export function SettingsTab({ event }: { event: Event }) {
               active={settings.cameraMode === 'open'}
               onClick={() => set('cameraMode', 'open')}
               title="Open camera"
-              body="Every photo is in the album the moment it is taken."
+              body="Photos enter the album immediately."
             />
             <Choice
               active={settings.cameraMode === 'roll'}
               onClick={() => set('cameraMode', 'roll')}
               title="Film rolls"
-              body="A fixed number of shots, no previews, developed later."
+              body="A fixed number of shots per roll, hidden until developed."
             />
           </div>
 
@@ -210,19 +217,19 @@ export function SettingsTab({ event }: { event: Event }) {
                 active={settings.galleryVisibility === 'everyone'}
                 onClick={() => set('galleryVisibility', 'everyone')}
                 title="Anyone with the link"
-                body="What makes the wall work on a borrowed projector."
+                body="Required for the public wall."
               />
               <Choice
                 active={settings.galleryVisibility === 'guests'}
                 onClick={() => set('galleryVisibility', 'guests')}
                 title="Only guests who joined"
-                body="The code, and a name, is the price of admission."
+                body="A valid guest session is required."
               />
               <Choice
                 active={settings.galleryVisibility === 'host'}
                 onClick={() => set('galleryVisibility', 'host')}
                 title="Only you"
-                body="Photos arrive in private and nobody else sees them."
+                body="Only the host sees the gallery."
               />
             </div>
           </div>
@@ -231,40 +238,120 @@ export function SettingsTab({ event }: { event: Event }) {
 
           <Toggle
             label="Approve photos before they appear"
-            hint="A shot waits for you, and is visible to nobody else until you say yes."
+            hint="New photos are visible to the host only until approved."
             checked={settings.photoApproval}
             onChange={(checked) => set('photoApproval', checked)}
           />
           <Toggle
             label="Reactions"
-            hint="The six emoji on every photo."
+            hint="Guests can react to photos."
             checked={settings.allowReactions}
             onChange={(checked) => set('allowReactions', checked)}
           />
           <Toggle
             label="Comments"
-            hint="Guests can say something under a photo."
+            hint="Guests can comment on photos."
             checked={settings.allowComments}
             onChange={(checked) => set('allowComments', checked)}
           />
           <Toggle
             label="Downloads"
-            hint="A guest may take the album home as a zip."
+            hint="Guests can download the album as a zip."
             checked={settings.allowDownloads}
             onChange={(checked) => set('allowDownloads', checked)}
           />
           <Toggle
             label="Prompts"
-            hint="Ask the room to shoot something specific."
+            hint="Show suggested subjects to guests."
             checked={settings.challengesEnabled}
             onChange={(checked) => set('challengesEnabled', checked)}
           />
-          <Toggle
-            label="The wall"
-            hint="The projector screen at /e/…/wall."
-            checked={settings.slideshowEnabled}
-            onChange={(checked) => set('slideshowEnabled', checked)}
-          />
+        </CardContent>
+      </Card>
+
+      {/* --- the wall ------------------------------------------------------ */}
+      <Card>
+        <CardContent className="flex flex-col gap-4 p-5">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h2 className="font-display text-xl">The wall</h2>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                The public screen at <code className="rounded bg-secondary px-1">/e/…/wall</code>: one
+                photo at a time, no sign-in.
+              </p>
+            </div>
+            <Switch
+              checked={settings.slideshowEnabled}
+              aria-label="The wall"
+              onCheckedChange={(checked) => set('slideshowEnabled', checked)}
+            />
+          </div>
+
+          <div className={cn('flex flex-col gap-4', !settings.slideshowEnabled && 'opacity-50')}>
+            <div className="flex flex-col gap-2">
+              <Label>Which order it plays</Label>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {WALL_ORDER_OPTIONS.map((option) => (
+                  <Choice
+                    key={option.value}
+                    active={settings.wallOrder === option.value}
+                    onClick={() => set('wallOrder', option.value as EventSettings['wallOrder'])}
+                    title={option.label}
+                    body={option.hint}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label>How long each photo stays</Label>
+              <div className="flex flex-wrap items-center gap-2">
+                {WALL_SECONDS.map((secs) => (
+                  <button
+                    key={secs}
+                    type="button"
+                    onClick={() => set('wallSeconds', secs)}
+                    className={cn(
+                      'rounded-full border px-3.5 py-1.5 text-sm',
+                      settings.wallSeconds === secs
+                        ? 'border-primary bg-primary/15 text-primary'
+                        : 'border-border/70 text-muted-foreground hover:bg-accent',
+                    )}
+                  >
+                    {secs}s
+                  </button>
+                ))}
+                <span className="text-xs text-muted-foreground">
+                  anything from 2 to 60
+                </span>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label>How it fits the screen</Label>
+              <div className="grid gap-2 sm:grid-cols-2">
+                <Choice
+                  active={settings.wallFit === 'contain'}
+                  onClick={() => set('wallFit', 'contain')}
+                  title="Whole frame"
+                  body="Entire photo, with bars where the screen shape differs."
+                />
+                <Choice
+                  active={settings.wallFit === 'cover'}
+                  onClick={() => set('wallFit', 'cover')}
+                  title="Fill the screen"
+                  body="No bars; edges are cropped to fit."
+                />
+              </div>
+            </div>
+
+            <Toggle
+              label="Names and captions"
+              hint="Guest name, caption and prompt under each photo."
+              checked={settings.wallCaptions}
+              onChange={(checked) => set('wallCaptions', checked)}
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -274,8 +361,8 @@ export function SettingsTab({ event }: { event: Event }) {
           <h2 className="font-display text-xl">Open or closed</h2>
           <p className="text-sm text-muted-foreground">
             {event.closedAt
-              ? 'This event is closed: guests can read the album, nobody can add to it.'
-              : 'Closing an event stops new photos, reactions and comments. Nothing is deleted, and you can reopen it.'}
+              ? 'This event is closed. Guests can view the album; nobody can add to it.'
+              : 'Closing stops new photos, reactions and comments. Nothing is deleted, and you can reopen it.'}
           </p>
           <Button
             variant={event.closedAt ? 'default' : 'outline'}
@@ -291,7 +378,7 @@ export function SettingsTab({ event }: { event: Event }) {
               )
             }
           >
-            {event.closedAt ? 'Reopen the album' : 'Close the album'}
+            {event.closedAt ? 'Reopen album' : 'Close album'}
           </Button>
         </CardContent>
       </Card>
@@ -311,8 +398,7 @@ export function SettingsTab({ event }: { event: Event }) {
           <DialogHeader>
             <DialogTitle>Delete {event.name}?</DialogTitle>
             <DialogDescription>
-              The album, the guests, the reactions and the comments all go. The photos stop being
-              listed anywhere, and there is no undo.
+              The album, guests, reactions and comments are deleted. This cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

@@ -55,7 +55,7 @@ export function ShareTab({ event }: { event: Event }) {
               )}
             </div>
 
-            <QrCode value={joinUrl} size={172} />
+            <QrCode value={joinUrl} size={168} />
 
             <div className="flex flex-col gap-1">
               <p className="font-mono text-2xl tracking-[0.35em]">{event.code}</p>
@@ -66,8 +66,8 @@ export function ShareTab({ event }: { event: Event }) {
 
             <p className="text-[11px] leading-relaxed text-muted-foreground">
               {event.settings.cameraMode === 'roll'
-                ? `You get ${event.settings.shotsPerRoll} shots and no previews. Everything develops later — shoot like nobody is watching.`
-                : 'Every photo you take joins the album, with your name under it.'}
+                ? `${event.settings.shotsPerRoll} shots per roll. Photos stay hidden until the roll is developed.`
+                : 'Photos join the album with your name on them.'}
             </p>
 
             <Button variant="outline" size="sm" className="no-print" onClick={() => window.print()}>
@@ -80,7 +80,7 @@ export function ShareTab({ event }: { event: Event }) {
         <div className="flex flex-col gap-3">
           <Card>
             <CardContent className="flex flex-col gap-3 p-5">
-              <Label>The guest link</Label>
+              <Label>Guest link</Label>
               <div className="flex items-center gap-2">
                 <code className="min-w-0 flex-1 truncate rounded-xl bg-secondary/60 px-3 py-2 text-xs">
                   {joinUrl}
@@ -97,7 +97,7 @@ export function ShareTab({ event }: { event: Event }) {
 
               <Separator />
 
-              <Label>The wall</Label>
+              <Label>Wall link</Label>
               <div className="flex items-center gap-2">
                 <code className="min-w-0 flex-1 truncate rounded-xl bg-secondary/60 px-3 py-2 text-xs">
                   {wallUrl}
@@ -112,8 +112,7 @@ export function ShareTab({ event }: { event: Event }) {
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Open this on whatever screen the room has. It needs no sign-in and updates itself
-                every few seconds.
+                Open on any screen. No sign-in required; it updates automatically.
               </p>
             </CardContent>
           </Card>
@@ -128,8 +127,7 @@ export function ShareTab({ event }: { event: Event }) {
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Six characters, no vowels, no O or 1 — so it can be read out loud from a card on the
-                table after a drink.
+                Six characters, no vowels, and no characters that are easy to confuse.
               </p>
               <Button
                 variant="ghost"
@@ -140,12 +138,12 @@ export function ShareTab({ event }: { event: Event }) {
                   rotate.mutate(undefined, {
                     onSuccess: (result) =>
                       toast.success('New code', {
-                        description: `The old one stopped working. It is ${result.event.code} now.`,
+                        description: `The previous code no longer works. New code: ${result.event.code}.`,
                       }),
                   })
                 }
               >
-                <RefreshCw className={cn(rotate.isPending && 'animate-spin')} /> Make a new code
+                <RefreshCw className={cn(rotate.isPending && 'animate-spin')} /> Generate new code
               </Button>
             </CardContent>
           </Card>

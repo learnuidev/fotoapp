@@ -145,8 +145,7 @@ export default function GuestEventPage({ params }: { params: { code: string } })
           {!event.galleryOpen ? (
             <Card>
               <CardContent className="p-6 text-sm text-muted-foreground">
-                The host is keeping this album closed for now. Your own photos are here, and the
-                rest appears when they open it.
+                The host has not opened this album yet. Your own photos are visible here.
               </CardContent>
             </Card>
           ) : null}
@@ -154,8 +153,8 @@ export default function GuestEventPage({ params }: { params: { code: string } })
           <div className="flex items-center justify-between">
             <p className="text-xs text-muted-foreground">
               {photos.data?.photos.length
-                ? `Newest first · updated as the evening goes on`
-                : 'Nothing here yet'}
+                ? 'Newest first'
+                : 'No photos yet'}
             </p>
             {event.settings.allowDownloads && photosList.length > 0 && (
               <DownloadAlbum
@@ -176,12 +175,12 @@ export default function GuestEventPage({ params }: { params: { code: string } })
             allowReactions={event.settings.allowReactions}
             onChanged={() => void photos.refetch()}
             emptyTitle={
-              event.settings.cameraMode === 'roll' ? 'The rolls are still in the camera' : 'No photos yet'
+              event.settings.cameraMode === 'roll' ? 'No developed rolls yet' : 'No photos yet'
             }
             emptyBody={
               event.settings.cameraMode === 'roll'
-                ? 'Nothing is visible until a roll is developed. Yours appears the moment the host brings them back.'
-                : 'Be the first. Whatever you shoot lands here with your name under it.'
+                ? 'Photos are hidden until a roll is developed. Yours appears when the host develops it.'
+                : 'Photos you add appear here with your name on them.'
             }
           />
         </TabsContent>
@@ -213,8 +212,8 @@ export default function GuestEventPage({ params }: { params: { code: string } })
             <Card>
               <CardContent className="p-6 text-sm text-muted-foreground">
                 {event.settings.cameraMode === 'roll'
-                  ? 'You have not loaded a roll yet. The camera tab hands you one.'
-                  : 'This event shoots on the open camera — every photo appears in the album straight away.'}
+                  ? 'No rolls yet. Load one from the camera tab.'
+                  : 'This event uses the open camera: photos appear in the album immediately.'}
               </CardContent>
             </Card>
           ) : (
@@ -266,7 +265,7 @@ export default function GuestEventPage({ params }: { params: { code: string } })
           </span>
         </span>
         <Link href="/" className="underline-offset-4 hover:underline">
-          made with foto
+          foto
         </Link>
       </footer>
     </div>
