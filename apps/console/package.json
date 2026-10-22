@@ -1,0 +1,30 @@
+{
+  "name": "foto-console",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Foto Console — the control room: deploy the API to an environment, see what it was deployed with, and run the app against it.",
+  "scripts": {
+    "dev": "next dev -p 3102",
+    "build": "next build",
+    "start": "next start -p 3102",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aws-sdk/client-cloudformation": "^3.600.0",
+    "@aws-sdk/client-ssm": "^3.600.0",
+    "@aws-sdk/client-sts": "^3.600.0",
+    "lucide-react": "^1.31.0",
+    "next": "^14.2.15",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^20.14.15",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "postcss": "^8.5.26",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.5.4"
+  }
+}

@@ -15,6 +15,7 @@ import { CfnOutput, Duration, RemovalPolicy, Stack, type StackProps } from 'aws-
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import type { Construct } from 'constructs';
 import { resolve } from 'node:path';
@@ -78,9 +79,18 @@ export class AuthStack extends Stack {
       removalPolicy: removable ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN,
     });
 
-    this.userPoolClient = new cognito.UserPoolClient(this, 'HostClient', {
+    /**
+     * The browser client.
+     *
+     * The construct id is `HostClientV2` on purpose. The client this stack first made
+     * got into a state where the pool listed it but refused to describe it or sign
+     * anybody in with it — visible in CloudFormation, useless in practice. Renaming the
+     * logical id is what makes CloudFormation create a new client and delete the old
+     * one; a property change would only have updated it.
+     */
+    this.userPoolClient = new cognito.UserPoolClient(this, 'HostClientV2', {
       userPool: this.userPool,
-      userPoolClientName: `foto-${config.stage}-app`,
+      userPoolClientName: `foto-${config.stage}-web`,
       // A browser client with no secret: Amplify runs in the page, and a secret
       // shipped to a browser is not a secret.
       generateSecret: false,
@@ -89,6 +99,32 @@ export class AuthStack extends Stack {
       accessTokenValidity: Duration.hours(1),
       idTokenValidity: Duration.hours(1),
       refreshTokenValidity: Duration.days(30),
+    });
+
+    /**
+     * The pool's coordinates, in Parameter Store.
+     *
+     * The API stack needs the issuer and the client id to build its authorizer, and the
+     * app needs the same two to sign in. Both read them from here rather than from a
+     * cross-stack reference, which is what makes rotating a client a parameter write
+     * instead of a stack rename: an export that an app client's id hangs off cannot be
+     * deleted while another stack imports it, and replacing a client is the one thing
+     * a Cognito deployment does want to be able to do.
+     */
+    new ssm.StringParameter(this, 'PoolIdParameter', {
+      parameterName: `/foto/${config.stage}/cognito/user-pool-id`,
+      stringValue: this.userPool.userPoolId,
+      description: 'foto host user pool id',
+    });
+    new ssm.StringParameter(this, 'ClientIdParameter', {
+      parameterName: `/foto/${config.stage}/cognito/client-id`,
+      stringValue: this.userPoolClient.userPoolClientId,
+      description: 'foto host app client id',
+    });
+    new ssm.StringParameter(this, 'IssuerParameter', {
+      parameterName: `/foto/${config.stage}/cognito/issuer`,
+      stringValue: this.userPool.userPoolProviderUrl,
+      description: 'foto host user pool JWT issuer',
     });
 
     // The trigger is the pool's to invoke; nothing else may.

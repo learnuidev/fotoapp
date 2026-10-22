@@ -26,10 +26,11 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 import type { Construct } from 'constructs';
 import { DOMAINS, ROUTES } from '../../../services/api/src/routes';
 import type { StageConfig } from '../config';
-import { AuthStack, servicePath } from './auth-stack';
+import { servicePath } from './auth-stack';
 import { DataStack } from './data-stack';
 import { MediaStack } from './media-stack';
 
@@ -40,7 +41,7 @@ export class ApiStack extends Stack {
     scope: Construct,
     id: string,
     config: StageConfig,
-    { data, media, auth }: { data: DataStack; media: MediaStack; auth: AuthStack },
+    { data, media }: { data: DataStack; media: MediaStack },
     props?: StackProps,
   ) {
     super(scope, id, props);
@@ -91,8 +92,25 @@ export class ApiStack extends Stack {
       },
     });
 
-    const authorizer = new HttpJwtAuthorizer('HostAuthorizer', auth.userPool.userPoolProviderUrl, {
-      jwtAudience: [auth.userPoolClient.userPoolClientId],
+    /**
+     * The pool, read from Parameter Store rather than from the auth stack.
+     *
+     * A cross-stack reference would tie this stack's template to a specific app
+     * client, and an export that a client id hangs off cannot be deleted while it is
+     * imported — so replacing a client would mean tearing down the API too. Resolved at
+     * deploy time, rotating a client is a parameter write and a redeploy of this stack.
+     */
+    const issuer = ssm.StringParameter.valueForStringParameter(
+      this,
+      `/foto/${config.stage}/cognito/issuer`,
+    );
+    const clientId = ssm.StringParameter.valueForStringParameter(
+      this,
+      `/foto/${config.stage}/cognito/client-id`,
+    );
+
+    const authorizer = new HttpJwtAuthorizer('HostAuthorizer', issuer, {
+      jwtAudience: [clientId],
       identitySource: ['$request.header.Authorization'],
     });
 

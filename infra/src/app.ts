@@ -33,12 +33,14 @@ export function buildApp(app: App, context: Record<string, unknown> = {}): void 
     description: `foto ${config.stage} — the photos bucket and the CDN in front of it`,
   });
 
-  const auth = new AuthStack(app, `${prefix}AuthStack-${suffix}`, config, {
+  // Built for its parameters as much as for its resources: the API stack reads the
+  // pool's issuer and client id from Parameter Store, so auth is deployed first.
+  new AuthStack(app, `${prefix}AuthStack-${suffix}`, config, {
     env,
     description: `foto ${config.stage} — the host user pool`,
   });
 
-  new ApiStack(app, `${prefix}ApiStack-${suffix}`, config, { data, media, auth }, {
+  new ApiStack(app, `${prefix}ApiStack-${suffix}`, config, { data, media }, {
     env,
     description: `foto ${config.stage} — the API, one Lambda per domain`,
   });

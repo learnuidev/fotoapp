@@ -23,7 +23,7 @@ export const fotoKeys = {
 
   // --- the guest screens ---------------------------------------------------
   join: (code: string) => ['foto', 'guest', 'join', code] as const,
-  guestMe: (eventId: string) => ['foto', 'guest', 'me', eventId] as const,
+  guestMe: (eventId: string) => ['foto', 'guest', eventId, 'me'] as const,
   guestPhotos: (eventId: string, filters: Record<string, unknown>) =>
     ['foto', 'guest', eventId, 'photos', filters] as const,
   guestRolls: (eventId: string) => ['foto', 'guest', eventId, 'rolls'] as const,

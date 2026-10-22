@@ -17,7 +17,6 @@ import type { HostUser } from '@foto/types';
 import {
   clearTokenCache,
   currentHost,
-  isAuthConfigured,
   signInWithPassword,
   signOutHost,
   signUpWithPassword,
@@ -30,8 +29,6 @@ import {
   subscribeToGuestSession,
   type GuestSession,
 } from '../lib/session';
-
-export { isAuthConfigured };
 
 /** Who is signed in to the console, and how to change that. */
 export function useHostSession() {

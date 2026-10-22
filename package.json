@@ -2,7 +2,7 @@
   "name": "foto",
   "version": "1.0.0",
   "private": true,
-  "description": "Foto \u2014 event photo sharing that combines the QR-code guest camera of Fotify, GuestPix and Kululu with the disposable film-roll camera of GuestCam: the app, the API it calls, and the AWS stacks that deploy it.",
+  "description": "Foto \u2014 event photo sharing that combines the QR-code guest camera of Fotify, GuestPix and Kululu with the disposable film-roll camera of GuestCam: the app, the API it calls, the AWS stacks that deploy it, and the console that runs the two together.",
   "workspaces": [
     "apps/*",
     "packages/*",
@@ -14,7 +14,10 @@
   },
   "scripts": {
     "dev": "npm run dev --workspace foto-web",
-    "build": "npm run build --workspace foto-web",
+    "console": "npm run dev --workspace foto-console",
+    "build": "npm run build --workspace foto-web && npm run build --workspace foto-console",
+    "build:web": "npm run build --workspace foto-web",
+    "build:console": "npm run build --workspace foto-console",
     "start": "npm run start --workspace foto-web",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "synth": "npm run synth --workspace foto-infra",
@@ -24,7 +27,6 @@
   },
   "devDependencies": {
     "@types/node": "^20.14.15",
-    "concurrently": "^9.1.0",
     "typescript": "^5.5.4"
   }
 }

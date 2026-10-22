@@ -64,7 +64,10 @@ export class DynamoStore implements Store {
     if (!entries.length) return this.get(collection, id);
 
     const names: Record<string, string> = { '#pk': collection.key };
-    const values: Record<string, unknown> = { ':pk': id };
+    // `:pk` is deliberately absent: the condition below names the key attribute but
+    // never compares it to a value, and DynamoDB refuses a request carrying an
+    // ExpressionAttributeValue that no expression uses.
+    const values: Record<string, unknown> = {};
     const sets = entries.map(([field, value], i) => {
       names[`#f${i}`] = field;
       values[`:v${i}`] = value;

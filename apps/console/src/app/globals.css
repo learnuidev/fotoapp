@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+/*
+ * The console's palette.
+ *
+ * It is dark because it is a room with a transcript in it, and it has accents the
+ * product does not: here a colour has a job. Mint is done, amber is running, rose is
+ * failed — so a stack's state is legible from across the desk without reading a word.
+ */
+@theme inline {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
+    monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-bad: var(--bad);
+}
+
+:root {
+  --background: oklch(0.17 0.012 250);
+  --foreground: oklch(0.95 0.005 250);
+  --card: oklch(0.22 0.014 250);
+  --border: oklch(0.34 0.014 250 / 75%);
+  --muted: oklch(0.27 0.013 250);
+  --muted-foreground: oklch(0.72 0.015 250);
+  --accent: oklch(0.62 0.13 250);
+  --accent-foreground: oklch(0.98 0.005 250);
+  --ok: oklch(0.78 0.15 160);
+  --warn: oklch(0.82 0.15 80);
+  --bad: oklch(0.68 0.19 20);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  html {
+    color-scheme: dark;
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  code,
+  pre,
+  kbd {
+    font-family: var(--font-mono);
+  }
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
