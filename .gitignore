@@ -1,0 +1,26 @@
+node_modules/
+.DS_Store
+
+# Build output
+.next/
+out/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+
+# Local runtime state: the JSON store and the uploaded bytes the dev API keeps.
+services/api/.data/
+
+# Secrets and per-machine environment
+.env
+.env.local
+.env.*.local
+
+# CDK
+infra/cdk.out/
+infra/cdk.out.changes/
+infra/.build/
+*.pem
+!services/api/*.pem
+node_modules/
+.npm-cache/

@@ -1,0 +1,37 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "paths": {
+      "@foto/types": [
+        "../types/src/index.ts"
+      ],
+      "@foto/ui": [
+        "../ui/src/index.ts"
+      ],
+      "@foto/api": [
+        "../api/src/index.ts"
+      ],
+      "@foto/auth": [
+        "../auth/src/index.ts"
+      ],
+      "@ui/*": [
+        "../ui/src/*"
+      ],
+      "@api/*": [
+        "../api/src/*"
+      ],
+      "@auth/*": [
+        "../auth/src/*"
+      ]
+    },
+    "types": [
+      "node"
+    ]
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

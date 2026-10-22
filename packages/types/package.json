@@ -1,0 +1,11 @@
+{
+  "name": "@foto/types",
+  "version": "1.0.0",
+  "private": true,
+  "description": "The shapes the API, the guest app and the host console all agree on.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  }
+}

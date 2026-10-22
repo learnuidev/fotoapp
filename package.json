@@ -1,0 +1,33 @@
+{
+  "name": "foto",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Foto — event photo sharing that combines the QR-code guest camera of Fotify, GuestPix and Kululu with the disposable film-roll camera of GuestCam, in one repository: the guest app, the host console, the API they share, and the infrastructure that deploys it.",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "services/*",
+    "infra"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "concurrently -n api,web -c magenta,cyan \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "npm run dev --workspace foto-backend",
+    "dev:web": "npm run dev --workspace foto-web",
+    "build": "npm run build --workspace foto-web",
+    "start": "npm run start --workspace foto-web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "seed": "npm run seed --workspace foto-backend",
+    "reset": "npm run reset --workspace foto-backend",
+    "synth": "npm run synth --workspace foto-infra",
+    "diff": "npm run diff --workspace foto-infra",
+    "deploy": "npm run deploy --workspace foto-infra"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.15",
+    "concurrently": "^9.1.0",
+    "typescript": "^5.5.4"
+  }
+}

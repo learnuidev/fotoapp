@@ -1,0 +1,26 @@
+{
+  "name": "foto-backend",
+  "version": "1.0.0",
+  "description": "The Foto backend's handlers (AWS Lambda + TypeScript + DynamoDB + S3), plus the local runtime that runs the same handlers without an AWS account.",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch --clear-screen=false src/dev/main.ts",
+    "start": "tsx src/dev/main.ts",
+    "typecheck": "tsc --noEmit",
+    "seed": "tsx src/dev/seed.ts",
+    "reset": "tsx src/dev/reset.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.600.0",
+    "@aws-sdk/client-s3": "^3.600.0",
+    "@aws-sdk/lib-dynamodb": "^3.600.0",
+    "@aws-sdk/s3-request-presigner": "^3.600.0",
+    "ulid": "^2.4.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.141",
+    "@types/node": "^20.14.15",
+    "tsx": "^4.19.2",
+    "typescript": "^5.5.4"
+  }
+}
