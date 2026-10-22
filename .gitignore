@@ -8,9 +8,6 @@ dist/
 *.tsbuildinfo
 next-env.d.ts
 
-# Local runtime state: the JSON store and the uploaded bytes the dev API keeps.
-services/api/.data/
-
 # Secrets and per-machine environment
 .env
 .env.local
@@ -18,6 +15,7 @@ services/api/.data/
 
 # CDK
 infra/cdk.out/
+infra/cdk.outputs.json
 infra/cdk.out.changes/
 infra/.build/
 *.pem

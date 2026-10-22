@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1600" width="1200" height="1600">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffecd2"/>
+      <stop offset="100%" stop-color="#fcb69f"/>
+    </linearGradient>
+    <radialGradient id="v" cx="50%" cy="42%" r="72%">
+      <stop offset="60%" stop-color="#000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0.28"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="1600" fill="url(#g)"/>
+  <circle cx="625" cy="705" r="240" fill="#fff" opacity="0.16"/>
+  <circle cx="675" cy="955" r="180" fill="#fff" opacity="0.1"/>
+  <text x="600" y="760" font-family="Helvetica, Arial, sans-serif" font-size="360" text-anchor="middle">🥂</text>
+  <text x="600" y="1080" font-family="Helvetica, Arial, sans-serif" font-size="58" font-weight="600" text-anchor="middle" fill="#4a2317" opacity="0.86">Your table, mid-laugh</text>
+  <rect width="1200" height="1600" fill="url(#v)"/>
+</svg>

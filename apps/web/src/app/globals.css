@@ -1,0 +1,160 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* The shared packages are outside this app, so Tailwind has to be told to read
+   them: without this the classes only the packages use — the buttons, the dialogs,
+   the emoji avatars — are never generated and the app renders unstyled exactly
+   where it matters most. */
+@source "../../../packages/ui/src";
+@source "../../../packages/auth/src";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, "Noto Sans", sans-serif;
+  /* The warm serif a wedding album's title is set in. System fonts only: a display
+     face fetched from a CDN is a flash of unstyled heading on a bad venue network. */
+  --font-display: ui-serif, "Iowan Old Style", "Apple Garamond", Georgia, Cambria, "Times New Roman",
+    Times, serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/*
+ * The palette is one evening: lamp light, warm paper, and the amber of a film
+ * box. It is dark by default and there is no light mode, which is a product
+ * decision rather than an omission — this is an app used in a dim room with a
+ * drink in the other hand, and a white gallery at midnight is a flashbang.
+ */
+:root {
+  --background: oklch(0.16 0.012 60);
+  --foreground: oklch(0.96 0.008 75);
+  --card: oklch(0.21 0.014 60);
+  --card-foreground: oklch(0.96 0.008 75);
+  --popover: oklch(0.2 0.014 60);
+  --popover-foreground: oklch(0.96 0.008 75);
+  --primary: oklch(0.78 0.15 55);
+  --primary-foreground: oklch(0.2 0.03 55);
+  --secondary: oklch(0.27 0.016 60);
+  --secondary-foreground: oklch(0.95 0.01 70);
+  --muted: oklch(0.26 0.014 60);
+  --muted-foreground: oklch(0.72 0.02 70);
+  --accent: oklch(0.31 0.02 60);
+  --accent-foreground: oklch(0.96 0.008 75);
+  --destructive: oklch(0.66 0.19 25);
+  --destructive-foreground: oklch(0.98 0.01 60);
+  --border: oklch(0.32 0.014 60 / 70%);
+  --input: oklch(0.34 0.016 60 / 80%);
+  --ring: oklch(0.78 0.15 55 / 60%);
+  --radius: 0.9rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply font-sans antialiased;
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    /* A single soft light from the top of the page, as if the room had a lamp in it. */
+    background-image: radial-gradient(
+      120% 80% at 50% -20%,
+      color-mix(in oklab, var(--primary) 12%, transparent),
+      transparent 60%
+    );
+    background-repeat: no-repeat;
+    min-height: 100dvh;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--primary) 40%, transparent);
+  }
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer components {
+  /**
+   * The film look.
+   *
+   * Applied to a photo when its event has `filmLook` on, and to a roll's frames
+   * always. Warm shadows, a touch of contrast, and a grain drawn as an SVG noise
+   * wash at very low opacity — the difference between "a camera roll" and "an album
+   * somebody made". It is CSS, so it costs no processing and can be switched off in
+   * settings.
+   */
+  .film {
+    filter: saturate(1.06) contrast(1.05) sepia(0.12) brightness(1.02);
+  }
+
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.11;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  }
+
+  /** A printed table card: what a guest scans, and what the host prints. */
+  .table-card {
+    background-image: radial-gradient(
+      100% 100% at 50% 0%,
+      color-mix(in oklab, var(--primary) 16%, transparent),
+      transparent 70%
+    );
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  :root {
+    --background: white;
+    --foreground: black;
+    --card: white;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "lib": ["ES2022"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "outDir": "dist",
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@foto/types": ["../packages/types/src/index.ts"],
+      "foto-api/*": ["../services/api/src/*"]
+    }
+  },
+  "include": ["bin/**/*.ts", "src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "cdk.out"]
+}

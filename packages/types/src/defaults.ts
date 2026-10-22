@@ -8,7 +8,8 @@
  * three would be a difference between what the console promises and what the
  * camera does.
  */
-import type { EventKind, EventSettings, ReactionEmoji, RollReveal } from './api';
+import type { EventKind, EventSettings, RollReveal } from './event';
+import type { ReactionEmoji } from './photo';
 
 export const DEFAULT_EVENT_SETTINGS: EventSettings = {
   cameraMode: 'open',

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1600" width="1200" height="1600">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#d4fc79"/>
+      <stop offset="100%" stop-color="#96e6a1"/>
+    </linearGradient>
+    <radialGradient id="v" cx="50%" cy="42%" r="72%">
+      <stop offset="60%" stop-color="#000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0.28"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="1600" fill="url(#g)"/>
+  <circle cx="744" cy="516" r="240" fill="#fff" opacity="0.16"/>
+  <circle cx="552" cy="1088" r="180" fill="#fff" opacity="0.1"/>
+  <text x="600" y="760" font-family="Helvetica, Arial, sans-serif" font-size="360" text-anchor="middle">✨</text>
+  <text x="600" y="1080" font-family="Helvetica, Arial, sans-serif" font-size="58" font-weight="600" text-anchor="middle" fill="#1d3b1f" opacity="0.86">String lights doing</text>
+  <text x="600" y="1154" font-family="Helvetica, Arial, sans-serif" font-size="58" font-weight="600" text-anchor="middle" fill="#1d3b1f" opacity="0.86">their thing</text>
+  <rect width="1200" height="1600" fill="url(#v)"/>
+</svg>

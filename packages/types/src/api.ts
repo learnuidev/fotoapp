@@ -7,7 +7,15 @@
  * the first is a field the server computes.
  */
 import type { Challenge } from './challenge';
-import type { Event, EventKind, EventSettings, EventStats, PublicEvent, RollReveal } from './event';
+import type {
+  Event,
+  EventCounts,
+  EventKind,
+  EventSettings,
+  EventStats,
+  PublicEvent,
+  RollReveal,
+} from './event';
 import type { Guest, GuestSession } from './guest';
 import type { Photo, PhotoComment, PhotoStatus, ReactionEmoji } from './photo';
 import type { Roll, RollWithPhotos } from './roll';
@@ -49,8 +57,10 @@ export interface CreateEventPayload {
 }
 
 export interface UpdateEventPayload extends Partial<CreateEventPayload> {
+  /** Closes or reopens the album: closed means read-only for everybody. */
   closed?: boolean;
-  coverKey?: string;
+  /** The photo the album is represented by, or null to take the cover away. */
+  coverPhotoId?: string | null;
 }
 
 export interface ListEventsResponse {
@@ -119,6 +129,10 @@ export interface ListPhotosResponse {
   photos: Photo[];
   /** The cursor for the next page: pass it back as `before`. */
   nextBefore: number | null;
+  /** The event's counts, so a gallery header does not need a second request. */
+  counts: EventCounts;
+  /** How many photos are waiting for the host. Always zero for a guest. */
+  pending: number;
 }
 
 export interface PhotoResponse {

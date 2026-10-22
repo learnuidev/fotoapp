@@ -1,0 +1,14 @@
+{
+  "app": "npx ts-node --prefer-ts-exts bin/foto.ts",
+  "watch": {
+    "include": ["bin/**", "src/**", "../services/api/src/**", "../packages/types/src/**"],
+    "exclude": ["node_modules", "dist", "cdk.out"]
+  },
+  "context": {
+    "@aws-cdk/core:checkSecretUsage": true,
+    "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
+    "@aws-cdk/aws-s3:createDefaultLoggingPolicy": false,
+    "@aws-cdk/core:defaultCrossStackReferences": "strong",
+    "@aws-cdk/core:checkSecretUsage": true
+  }
+}

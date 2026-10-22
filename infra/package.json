@@ -2,15 +2,15 @@
   "name": "foto-infra",
   "version": "1.0.0",
   "private": true,
-  "description": "AWS CDK app for the Foto backend — the API, the photos bucket, the tables behind it, and the user pool the host console signs in to.",
+  "description": "AWS CDK app for the Foto backend \u2014 the API, the photos bucket, the tables behind it, and the user pool the host console signs in to.",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build": "tsc",
-    "synth": "cdk synth",
-    "diff": "cdk diff",
-    "deploy": "cdk deploy --all",
-    "bootstrap": "cdk bootstrap",
-    "destroy": "cdk destroy --all"
+    "synth": "cdk synth --context stage=dev",
+    "diff": "cdk diff --context stage=dev",
+    "deploy": "cdk deploy --all --context stage=dev --require-approval never",
+    "deploy:full": "cdk deploy --all --context stage=dev --require-approval never --outputs-file cdk.outputs.json",
+    "destroy": "cdk destroy --all --context stage=dev --require-approval never",
+    "bootstrap": "cdk bootstrap"
   },
   "dependencies": {
     "aws-cdk-lib": "^2.160.0",
