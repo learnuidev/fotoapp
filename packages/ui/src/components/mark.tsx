@@ -16,7 +16,7 @@ export function Mark({ className, withWord = true }: { className?: string; withW
       </span>
       {withWord && (
         <span className="font-display text-xl tracking-tight">
-          foto<span className="text-primary">.</span>
+          fotoshare<span className="text-primary">.</span>
         </span>
       )}
     </span>

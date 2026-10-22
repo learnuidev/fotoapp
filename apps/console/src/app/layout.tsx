@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <span className="relative grid size-7 place-items-center rounded-full bg-gradient-to-br from-amber-300 via-rose-400 to-violet-500">
                   <span className="size-2.5 rounded-full bg-background/90" />
                 </span>
-                <span className="font-mono text-sm tracking-tight">foto console</span>
+                <span className="font-mono text-sm tracking-tight">fotoshare console</span>
               </Link>
               <nav className="flex items-center gap-1 text-sm">
                 <NavLink href="/backends">Backends</NavLink>

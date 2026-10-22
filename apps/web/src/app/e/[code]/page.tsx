@@ -265,7 +265,7 @@ export default function GuestEventPage({ params }: { params: { code: string } })
           </span>
         </span>
         <Link href="/" className="underline-offset-4 hover:underline">
-          foto
+          fotoshare
         </Link>
       </footer>
     </div>

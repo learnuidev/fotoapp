@@ -26,7 +26,7 @@ function line(value: EnvValue): string {
 /** The file's contents, for a stage and the values it gave. */
 export function renderEnvFile(stage: Stage, values: EnvValue[]): string {
   return [
-    '# Written by the foto console — edits here are overwritten the next time it',
+    '# Written by the fotoshare console — edits here are overwritten the next time it',
     '# points the app at a stage. Change the stage\'s stacks, not this file.',
     '#',
     `# stage: ${stage}`,

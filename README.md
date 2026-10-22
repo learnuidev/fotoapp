@@ -1,4 +1,4 @@
-# foto
+# fotoshare
 
 Event photo sharing: a join code, a shared album that guests fill from their own
 cameras, and a live wall — or film rolls that stay hidden until the host develops them.
@@ -135,8 +135,6 @@ NEXT_PUBLIC_API_URL=https://<api-id>.execute-api.us-east-1.amazonaws.com
 NEXT_PUBLIC_COGNITO_USER_POOL_ID=us-east-1_XXXXXXXXX
 NEXT_PUBLIC_COGNITO_CLIENT_ID=xxxxxxxxxxxxxxxxxxxxxxxxxx
 NEXT_PUBLIC_APP_URL=http://localhost:3100
-# optional: the code of an event to offer on the front page as a demo
-NEXT_PUBLIC_DEMO_CODE=XXXXXX
 ```
 
 Other commands:

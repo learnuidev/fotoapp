@@ -4,15 +4,7 @@ import { Button } from '@foto/ui';
 import { SiteHeader } from '@/components/site-header';
 import { QrCode } from '@/components/qr-code';
 
-/**
- * A real event on the deployed stage, if this build has one.
- *
- * The front page is where somebody decides whether this is worth five minutes, and the
- * fastest way to answer that is a wedding they can walk into. A stage sets
- * `NEXT_PUBLIC_DEMO_CODE` to the code of an event it keeps for exactly that; with none
- * set, the page simply does not offer one.
- */
-const DEMO_CODE = process.env.NEXT_PUBLIC_DEMO_CODE;
+/** Where this app is served, which is what the card's code points at. */
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3100';
 
 /**
@@ -46,11 +38,6 @@ export default function LandingPage() {
                   Host an event <ArrowRight />
                 </Link>
               </Button>
-              {DEMO_CODE && (
-                <Button asChild size="lg" variant="outline">
-                  <Link href={`/j/${DEMO_CODE}`}>See one as a guest</Link>
-                </Button>
-              )}
             </div>
           </div>
 
@@ -59,11 +46,10 @@ export default function LandingPage() {
               <p className="text-[11px] uppercase tracking-[0.28em] text-[#8a6a4d]">
                 The table card
               </p>
-              <QrCode value={`${APP_URL}/j/${DEMO_CODE ?? 'TABLE'}`} size={168} />
-              <p className="font-mono text-2xl tracking-[0.35em] text-[#2a1f16]">
-                {DEMO_CODE ?? 'K7M2QX'}
+              <QrCode value={APP_URL} size={168} />
+              <p className="text-xs text-[#8a6a4d]">
+                Every event gets its own code and QR for the tables.
               </p>
-              <p className="text-xs text-[#8a6a4d]">Scan, or type the code.</p>
             </div>
           </div>
         </section>
@@ -110,13 +96,7 @@ export default function LandingPage() {
 
       <footer className="border-t border-border/50 py-6">
         <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-2 px-5 text-xs text-muted-foreground">
-          <p>foto — a shared photo album for events.</p>
-          {DEMO_CODE && (
-            <p>
-              Demo code{' '}
-              <span className="font-mono tracking-widest text-foreground">{DEMO_CODE}</span>
-            </p>
-          )}
+          <p>fotoshare — a shared photo album for events.</p>
         </div>
       </footer>
     </div>

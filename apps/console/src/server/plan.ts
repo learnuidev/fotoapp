@@ -8,43 +8,17 @@
  */
 import type { ChecklistItem, EnvValue, Stage, StageDetail, StageSummary } from '@/lib/types';
 import { readParameter, readStacks } from './aws';
-import { currentWebEnv } from './env-file';
-
-/**
- * A value in the app's current `.env.local`, if it has one.
- *
- * The console owns the five values a stage derives. Anything else in that file — the
- * demo code on the front page, say — is the app's, and rewriting the file must not throw
- * it away. Reading it back before writing is the cheapest way to keep that promise.
- */
-function existingEnvValue(name: string): string | null {
-  const contents = currentWebEnv();
-  if (!contents) return null;
-  const line = contents
-    .split('\n')
-    .map((entry) => entry.trim())
-    .filter((entry) => entry.startsWith(`${name}=`))
-    .pop();
-  return line ? line.slice(name.length + 1) : null;
-}
 
 /** Where the console expects the app to be served for a stage. */
 export function appUrlFor(stage: Stage): string {
   const configured = process.env[`FOTO_APP_URL_${stage.toUpperCase()}`];
   if (configured) return configured.replace(/\/+$/, '');
-  // The app runs on the developer's machine against a deployed API; the port does
-  // not change with the stage, because there is only ever one app running.
+  // The app runs on the developer's machine against a deployed API; the port does not
+  // change with the stage, because there is only ever one app running.
   return 'http://localhost:3100';
 }
 
-/**
- * The five values the app is started with.
- *
- * Read from the stacks that own them — the API's URL and the photos CDN from
- * `FotoApiStack-*` / `FotoMediaStack-*`, the pool from the parameters `FotoAuthStack-*`
- * writes — so "the env this stage gives the app" is a fact about the deployment
- * rather than a file somebody edited by hand.
- */
+/** The values a stage hands the app, read from the stacks and parameters that own them. */
 export async function envFor(stage: Stage): Promise<EnvValue[]> {
   const stacks = await readStacks(stage);
   const byId = new Map(stacks.map((stack) => [stack.id, stack]));
@@ -76,11 +50,6 @@ export async function envFor(stage: Stage): Promise<EnvValue[]> {
       name: 'NEXT_PUBLIC_APP_URL',
       value: appUrlFor(stage),
       source: 'where the app is served',
-    },
-    {
-      name: 'NEXT_PUBLIC_DEMO_CODE',
-      value: process.env.NEXT_PUBLIC_DEMO_CODE ?? existingEnvValue('NEXT_PUBLIC_DEMO_CODE'),
-      source: 'optional: the event the front page offers as a demo (kept from the current file)',
     },
   ];
 }

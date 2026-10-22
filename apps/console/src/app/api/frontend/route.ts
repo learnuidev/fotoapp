@@ -29,7 +29,7 @@ export async function POST(request: Request) {
   }
 
   const values = await envFor(body.stage);
-  const missing = values.filter((entry) => entry.value === null && entry.name !== 'NEXT_PUBLIC_DEMO_CODE');
+  const missing = values.filter((entry) => entry.value === null);
   if (missing.length > 0) {
     return NextResponse.json(
       {

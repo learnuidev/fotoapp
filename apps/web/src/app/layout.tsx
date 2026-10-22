@@ -1,19 +1,19 @@
-import type { Metadata, Viewport } from 'next';
-import './globals.css';
-import { AppProviders } from '@foto/auth';
+import type { Metadata, Viewport } from "next";
+import "./globals.css";
+import { AppProviders } from "@foto/auth";
 
 export const metadata: Metadata = {
-  title: 'foto — event photo sharing',
+  title: "fotoshare",
   description:
-    'Guests join with a code, upload to one shared album, and follow it on a live wall. No app or account required for guests.',
+    "Guests join with a code, upload to one shared album, and follow it on a live wall. No app or account required for guests.",
 };
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#fbf8f3' },
-    { media: '(prefers-color-scheme: dark)', color: '#0b0a09' },
+    { media: "(prefers-color-scheme: light)", color: "#fbf8f3" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b0a09" },
   ],
-  width: 'device-width',
+  width: "device-width",
   initialScale: 1,
   // A gallery is a picture; letting a phone zoom into a caption is not the point.
   maximumScale: 5,
@@ -27,7 +27,11 @@ export const viewport: Viewport = {
  * chrome. Each area draws its own — `host/layout.tsx` for the console, the gallery
  * pages for the guest.
  */
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-dvh">
